@@ -117,6 +117,13 @@ Un despachador en proceso, síncrono y con manejo de errores por suscriptor. No 
 introduce cola externa: con una réplica y efectos idempotentes es suficiente, y es la
 misma decisión que el proyecto tomó para el rate limit y el cron interno.
 
+Regla de uso: lo que debe ocurrir sí o sí junto con la acción (crear el caso al activar
+modo perdido, cerrarlo al confirmar el regreso) va en la misma transacción como llamada
+directa entre servicios, no como evento. Los eventos son para efectos secundarios que no
+pueden tumbar la acción principal: alertas, push, contadores de sospecha. En S3 esas
+alertas usan las funciones existentes de `alerts/service`; el despachador se introduce
+en S4, cuando aparece más de un suscriptor por evento.
+
 | Evento | Emisor | Suscriptores |
 |---|---|---|
 | `ScanVerified` | `scans` | `tags` (actualiza contador, replays), `alerts` (escaneo de collar si la mascota está en casa) |

@@ -247,6 +247,8 @@ y la app los recibe por el contrato o por configuración remota, sin duplicarlos
 | `MEDICAL_NOTES_MAX_LENGTH` | 300 | nuevo | ídem |
 | `MICROCHIP_CODE_MAX_LENGTH` | 15 (ISO 11784) | nuevo | ídem |
 | `EXPIRED_LINKS_RETENTION_DAYS` | 30 | nuevo | `features/guardians/constants.ts` |
+| `LINK_CODE_BYTES` | 32 bytes de entropía | nuevo | ídem |
+| `SCAN_TOKEN_BYTES` | 32 bytes de entropía | nuevo | `features/scans/constants.ts` |
 | `GUARDIAN_INVITE_TTL_HOURS` | 72 | nuevo | `features/guardians/constants.ts` |
 | `PET_TRANSFER_TTL_DAYS` | 7 | nuevo | ídem |
 | `MAP_CLUSTER_ZOOM_THRESHOLD` | 14 | nuevo | `features/map/constants.ts` |

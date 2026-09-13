@@ -31,7 +31,7 @@ en `GOOGLE_MOBILE_CLIENT_IDS` como audiencias válidas del ID token.
 | Tema | Regla |
 |---|---|
 | Paginación | Cursor opaco: `?cursor=&limit=`; respuesta `{ items, nextCursor }`. `limit` acotado por la constante de la feature (`FEED_PAGE_SIZE`, `ALERTS_PAGE_SIZE`) |
-| Subida de fotos | `multipart/form-data`; el servidor convierte a WebP con las reglas existentes; la app comprime antes con los mismos límites del navegador |
+| Subida de fotos | `multipart/form-data`: los campos van en el formulario (los booleanos como `true`/`false`) y los archivos en el campo `photos`; la capa de API valida cantidad, peso y tipo antes del servicio; el servidor convierte a WebP con las reglas existentes; la app comprime antes con los mismos límites del navegador |
 | Fotos | `GET /fotos/{id}` existente, con caché inmutable |
 | Rate limit | Encabezados `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`; `429` con Problem Details |
 | Correlación | La app envía `X-Request-Id`; el backend lo devuelve y lo loguea |
@@ -107,8 +107,8 @@ Códigos de problema (extracto): `auth.required`, `auth.suspended`, `validation.
 | `POST /api/v1/guardian-invites/{code}/accept` | S | Aceptar | S3 |
 | `DELETE /api/v1/pets/{id}/guardians/{userId}` | S dueño | Quitar guardián | S3 |
 | `POST /api/v1/pets/{id}/transfers` | S dueño | Enlace de transferencia | S3 |
-| `POST /api/v1/transfers/{code}/accept` | S | Aceptar | S3 |
-| `POST /api/v1/transfers/{id}/cancel` | S dueño | Cancelar | S3 |
+| `POST /api/v1/transfers/{code}/accept` | S | Aceptar: el receptor pasa a dueño y el anterior queda como guardián | S3 |
+| `POST /api/v1/pets/{id}/transfers/cancel` | S dueño | Cancelar la transferencia pendiente de la mascota | S3 |
 
 ### Collar y escaneo
 
@@ -119,7 +119,7 @@ Códigos de problema (extracto): `auth.required`, `auth.suspended`, `validation.
 | `GET /api/v1/scans/{token}` | T | Estado de la sesión de escaneo y datos públicos de la mascota | S4 |
 | `POST /api/v1/scans/{token}/finder-report` | T | Aviso al dueño con mensaje, ubicación aproximada, foto y teléfono opcional | S4 |
 | `POST /api/v1/scans/{scanId}/suspicious` | S guardián | Marca sospechoso; el tag entra a revisión | S4 |
-| `POST /api/v1/tags/activate` | S + T | `{scanToken, petId}` | S3 |
+| `POST /api/v1/tags/activate` | S | `{scanToken, petId}`; el token de escaneo va en el cuerpo y se consume | S3 |
 | `POST` / `DELETE /api/v1/tags/{id}/mute` | S dueño | Silenciar | S4 |
 | `POST /api/v1/tags/{id}/unlink` | S dueño | Desvincular; el tag vuelve a `LISTO` | S3 |
 

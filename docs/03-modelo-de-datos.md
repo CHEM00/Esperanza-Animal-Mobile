@@ -196,7 +196,9 @@ a `INACTIVA` sin cerrar el caso.
 **Tag.** Tabla completa en el documento 04 §9.
 
 **Transferencia.** `PENDIENTE → ACEPTADA | RECHAZADA | EXPIRADA | RESUELTA_ADMIN`. Estado
-final, sin retorno.
+final, sin retorno. Al aceptarse, el receptor pasa a `DUENO` y el dueño anterior queda
+como `GUARDIAN` (sigue recibiendo alertas y puede quitarse después). Cancelar por el
+dueño deja `RECHAZADA`. Hay a lo sumo una transferencia pendiente por mascota.
 
 ## 7. Formato de campos cifrados
 

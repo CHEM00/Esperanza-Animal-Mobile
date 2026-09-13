@@ -166,20 +166,48 @@ documento 10 §1 está completa sin pendientes.
 
 **Repositorio:** `esperanza-animal`. **Cubre:** RF-C1 a RF-C8, RF-D1 a RF-D4, RF-E3, RF-E4,
 RF-E5 (desvincular), ADR-002, ADR-011.
+**Estado:** implementada y probada en vivo el 2026-09-13 en la rama
+`feat/s1-cimientos-api-v1`.
 
-- [ ] Migración `pets_and_guardians`.
-- [ ] `lib/photo-storage.ts`: ámbito `user` o `pet`; resolvedor de `/fotos/{id}` como
-      cadena de resolvedores (`PublicationPhoto`, `Sighting`, `PetPhoto`).
-- [ ] `features/pets`: esquemas, `constants.ts`, servicio con máquina de estados,
-      `publicCode`, preferencias de visibilidad, modo perdido que emite
-      `PetLostModeActivated`, regreso que emite `PetFound`.
-- [ ] `features/publications`: suscriptor que crea el caso prellenado con copia de fotos y
-      `petId`; `hasNfcTag` en el resumen.
-- [ ] `features/guardians`: guardianes, invitaciones con hash, transferencias con hash y
-      vencimiento, resolución administrativa con bitácora.
-- [ ] `features/tags`: `activate` (token + `LISTO` + dueño), `unlink`, `TagAssignment`.
-- [ ] Endpoints de la sección «Mascotas y guardianes» y `tags/activate`, `tags/unlink`.
-- [ ] Pruebas de esquemas, máquinas de estado, servicio de activación y creación del caso.
+- [x] Migraciones `pets_and_guardians` (con los índices únicos parciales «un dueño por
+      mascota» y «una asignación abierta por tag», añadidos a mano al SQL; Prisma no los
+      detecta como drift) y `admin_actions_transfer_contact`.
+- [x] `lib/photo-storage.ts` con ámbitos `user` y `pet` (`{UPLOADS_DIR}/pets/{petId}`),
+      copia de fotos entre ámbitos y `lib/photo-scope-resolver.ts` como cadena de
+      resolvedores para `/fotos/{id}`.
+- [x] `features/pets`: esquemas (JSON y multipart), constantes, código público,
+      máquina de estados, consultas, mapeadores y servicio: alta con fotos, edición
+      parcial, baja lógica, fotos, modo perdido y regreso.
+- [x] `features/publications`: `createPublicationFromPet` dentro de la transacción del
+      modo perdido y `hasReachedDailyPublicationLimit` compartido.
+- [x] `features/guardians`: invitaciones y transferencias con código opaco (solo el hash
+      en la base), aceptación, cancelación por mascota y resolución administrativa con
+      bitácora (`RESOLVER_TRANSFERENCIA`; el endpoint llega en S8).
+- [x] `features/tags`: activación con token de escaneo de un solo uso, desvinculación y
+      `TagAssignment`; el escaneo ya reconoce al guardián de la mascota del tag.
+- [x] Capa de API: cuerpos `multipart/form-data` con validación de archivos en cantidad,
+      peso y tipo, documentados en el contrato; 16 códigos de problema nuevos.
+- [x] 19 rutas nuevas bajo `/api/v1` (mascotas, fotos, modo perdido, guardianes,
+      invitaciones, transferencias, collar). Contrato: 18 rutas, 15 componentes.
+- [x] `scripts/dev-session.mjs`: sesión portadora de prueba sin OAuth (solo desarrollo).
+- [x] Al eliminar la cuenta, las mascotas del dueño quedan inactivas y sus collares libres.
+- [x] Pruebas: esquemas, código público, máquina de estados; 168 en total en verde;
+      typecheck, lint y `next build` limpios.
+
+**Prueba en vivo realizada** (22 comprobaciones): crear mascota con foto por multipart,
+listar, escaneo con sesión sobre tag `LISTO` → `ACTIVATION` con token, activar collar,
+token de un solo uso, invitación y aceptación por un segundo usuario, invitación de un
+solo uso, un guardián no edita, escaneo del guardián → `GUARDIAN`, escaneo anónimo →
+`FINDER`, modo perdido por el guardián crea el caso `ACTIVA` enlazado con copia de la
+foto, no se activa dos veces, regreso cierra el caso como `ENCONTRADA`, desvincular deja
+el tag `LISTO` con la asignación cerrada, la foto se sirve como WebP.
+
+Desviaciones respecto al diseño, ya reflejadas en los documentos: los eventos de dominio
+se difieren a S4 (aquí las operaciones transaccionales son llamadas directas y las
+alertas usan los servicios existentes); cancelar una transferencia es
+`POST /pets/{id}/transfers/cancel` (evita dos nombres de parámetro dinámico bajo la misma
+carpeta de rutas); al aceptar una transferencia el dueño anterior queda como `GUARDIAN`;
+`hasNfcTag` en el resumen del feed llega con la API del feed (S7).
 
 **Aceptación:** flujo completo por API en una prueba de integración local: crear mascota
 con fotos, invitar guardián, aceptar, activar tag `LISTO` con un token de escaneo válido,
