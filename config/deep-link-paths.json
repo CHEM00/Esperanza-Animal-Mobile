@@ -1,0 +1,11 @@
+{
+  "$comment": "Rutas del dominio que abren la app (docs/06 §5). Las lee app.config.ts para los intent filters y los applinks, y src/core/navigation/links.ts para resolverlas en tiempo de ejecución. Una sola fuente.",
+  "paths": [
+    { "id": "tagScan", "pattern": "/t", "description": "URL grabada en el collar NFC" },
+    { "id": "qrScan", "pattern": "/q/*", "description": "QR impreso en el collar" },
+    { "id": "finder", "pattern": "/encontre/*", "description": "Vista de quien encontro a la mascota" },
+    { "id": "publication", "pattern": "/publicacion/*", "description": "Detalle de un caso" },
+    { "id": "guardianInvite", "pattern": "/invitacion/*", "description": "Invitacion de guardian" },
+    { "id": "petTransfer", "pattern": "/transferencia/*", "description": "Transferencia de mascota" }
+  ]
+}

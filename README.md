@@ -4,14 +4,68 @@ Aplicación nativa de **Esperanza Animal**, la plataforma comunitaria del sur de
 Veracruz para ayudar a las mascotas a volver a casa. Un proyecto de **sysosa**.
 _«Porque ellos también son familia.»_
 
-Este repositorio contiene la app de consumo para Android e iOS. El backend, la web y el
-contrato de la API viven en el repositorio `esperanza-animal`. La herramienta interna de
-personalización de collares NFC vive en un repositorio aparte.
+Este repositorio contiene la app de consumo para Android e iOS, construida con React
+Native y Expo. El backend, la web y el contrato de la API viven en el repositorio
+`esperanza-animal`. La herramienta interna de personalización de collares NFC vive en
+un repositorio aparte.
 
 ## Estado
 
-Fase de arquitectura y planificación. Toda la documentación está en [`docs/`](docs/README.md);
-el código de la app se crea en la sección S10 del [plan de trabajo](docs/09-plan-de-trabajo.md).
+Cimientos de la app implementados (sección S10 del [plan](docs/09-plan-de-trabajo.md)):
+configuración validada, cliente tipado por contrato, sesión con proveedores nativos,
+tema con los tokens de la web, pestañas nativas y puerta de actualización obligatoria.
+Las pantallas de negocio llegan en las secciones S11 a S14.
+
+## Puesta en marcha
+
+Requisitos: Node 24, el repositorio del backend a mano y, para compilar, una cuenta de
+Expo (EAS). Sin Mac se compila iOS en la nube.
+
+```bash
+npm ci
+cp .env.example .env            # identidad de la app y URL del backend local
+WEB_REPO_PATH=../esperanza-animal npm run contract:pull   # copia contract/openapi.json
+npm run api:generate            # tipos del cliente desde el contrato
+WEB_REPO_PATH=../esperanza-animal npm run tokens:sync     # colores y radios desde la web
+npm start                       # Metro; la app necesita una build de desarrollo
+```
+
+La app usa módulos nativos (Google Sign-In, Apple, almacenamiento seguro), así que no
+corre en Expo Go: se instala una **build de desarrollo** con EAS
+(`eas build --profile development`) o localmente con Android Studio.
+
+## Estructura
+
+```
+app/            Rutas de Expo Router: solo componen pantallas
+config/         Configuración de build (app.config.ts la lee) y rutas de enlaces
+contract/       Copia versionada del contrato OpenAPI del backend
+scripts/        Sincronización de contrato y tokens
+src/core/       Configuración, API, sesión, tema, navegación, puertos y adaptadores
+src/features/   Una carpeta por dominio: pantallas, hooks, repositorio, textos
+src/shared/ui/  Primitivas de interfaz con los tokens de marca
+docs/           Arquitectura, requisitos, plan por secciones y ADR
+```
+
+Reglas del proyecto (docs/06):
+
+- **Cero valores mágicos.** Identidad y dominios en `.env` y `config/`; límites de
+  producto llegan del backend por `GET /api/v1/config`; colores del archivo generado.
+- **Capas.** Las rutas no tienen lógica; la UI no importa el cliente HTTP generado ni
+  adaptadores de dispositivo (ESLint lo impide).
+- **Contrato primero.** `npm run api:check` y `npm run tokens:check` fallan en CI si el
+  cliente o los tokens no coinciden con lo commiteado.
+
+## Scripts
+
+| Comando | Qué hace |
+|---|---|
+| `npm start` | Metro para una build de desarrollo |
+| `npm run lint` / `typecheck` / `test` | Calidad |
+| `npm run contract:pull` | Copia el contrato del backend (`WEB_REPO_PATH`) |
+| `npm run api:generate` / `api:check` | Genera o verifica los tipos del cliente |
+| `npm run tokens:sync` / `tokens:check` | Genera o verifica los tokens de diseño |
+| `npm run doctor` | Diagnóstico de Expo |
 
 ## Documentación
 
@@ -29,9 +83,3 @@ el código de la app se crea en la sección S10 del [plan de trabajo](docs/09-pl
 | [09 Plan de trabajo](docs/09-plan-de-trabajo.md) | Secciones, tareas, criterios de aceptación y orden |
 | [10 Preparación de tags](docs/10-preparacion-tags.md) | Qué debe existir el día que lleguen los chips |
 | [ADR](docs/adr/README.md) | Registro de decisiones de arquitectura |
-
-## Nombre del repositorio
-
-El directorio se llama `Esperanza-Animal-Android` por su origen; el nombre acordado es
-`Esperanza-Animal-Mobile` porque cubre ambas plataformas (ADR-005). El renombrado es una
-acción manual pendiente.

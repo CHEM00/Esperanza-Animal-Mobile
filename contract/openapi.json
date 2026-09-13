@@ -1,0 +1,725 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Esperanza Animal API v1",
+    "version": "1",
+    "description": "Contrato que consume la app móvil de Esperanza Animal. Se genera desde las declaraciones de ruta del backend; no se edita a mano."
+  },
+  "tags": [
+    {
+      "name": "account"
+    },
+    {
+      "name": "config"
+    },
+    {
+      "name": "scans"
+    }
+  ],
+  "paths": {
+    "/api/v1/config": {
+      "get": {
+        "operationId": "getRemoteConfig",
+        "summary": "Configuración remota para la app móvil",
+        "tags": [
+          "config"
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuración vigente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoteConfig"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "operationId": "getMe",
+        "summary": "Usuario en sesión y estado de su cuenta",
+        "tags": [
+          "account"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario, onboarding y preferencias",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/scans/nfc": {
+      "post": {
+        "operationId": "resolveNfcScan",
+        "summary": "Verifica una lectura NFC y resuelve qué vista mostrar",
+        "tags": [
+          "scans"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "p": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{32}$",
+                    "description": "PICCData cifrado (UID y contador), 32 hexadecimales"
+                  },
+                  "m": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{16}$",
+                    "description": "CMAC de la lectura, 16 hexadecimales"
+                  }
+                },
+                "required": [
+                  "p",
+                  "m"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vista resuelta y token de escaneo si aplica",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanResolution"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Me": {
+        "description": "Usuario en sesión, estado de onboarding y preferencias",
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "image": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "email",
+              "image",
+              "role"
+            ],
+            "additionalProperties": false
+          },
+          "onboardingComplete": {
+            "type": "boolean",
+            "description": "Falso hasta completar colonia, especies y aviso de privacidad (6b)"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "coloniaId": {
+                    "type": "string"
+                  },
+                  "coloniaName": {
+                    "type": "string"
+                  },
+                  "coloniaCp": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "species": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "PERRO",
+                        "GATO",
+                        "OTRO"
+                      ]
+                    }
+                  },
+                  "notifyColonia": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "coloniaId",
+                  "coloniaName",
+                  "coloniaCp",
+                  "species",
+                  "notifyColonia"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "user",
+          "onboardingComplete",
+          "profile"
+        ],
+        "additionalProperties": false
+      },
+      "Problem": {
+        "description": "Error en formato Problem Details (RFC 9457)",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "URN estable del tipo de problema"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "detail": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "description": "Código estable para traducir en la app"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "errors": {
+            "description": "Errores por campo cuando el código es validation.failed",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "message"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "requestId"
+        ],
+        "additionalProperties": false
+      },
+      "RemoteConfig": {
+        "description": "Configuración que la app consulta al arrancar: versión mínima, proveedores, municipios y límites de producto.",
+        "type": "object",
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "description": "Versión mayor del contrato"
+          },
+          "minSupportedAppVersion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Versión mínima de la app (semver). Por debajo, la app exige actualizar. Nulo: sin mínimo."
+          },
+          "oauthProviders": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "google",
+                "microsoft",
+                "apple"
+              ]
+            },
+            "description": "Proveedores de login habilitados, en el orden del diseño"
+          },
+          "activeMunicipios": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "estado": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "estado"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "limits": {
+            "type": "object",
+            "properties": {
+              "maxPhotos": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "minPhotos": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "maxPhotoBytes": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "nameMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "descriptionMinLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "descriptionMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "referenceMinLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "referenceMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "speciesDetailMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "phoneLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "maxPublicationsPerDay": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sightingZoneMinLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sightingZoneMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sightingNoteMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "reportNoteMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "clientImageMaxDimension": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "clientImageQuality": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "maxPhotos",
+              "minPhotos",
+              "maxPhotoBytes",
+              "nameMaxLength",
+              "descriptionMinLength",
+              "descriptionMaxLength",
+              "referenceMinLength",
+              "referenceMaxLength",
+              "speciesDetailMaxLength",
+              "phoneLength",
+              "maxPublicationsPerDay",
+              "sightingZoneMinLength",
+              "sightingZoneMaxLength",
+              "sightingNoteMaxLength",
+              "reportNoteMaxLength",
+              "clientImageMaxDimension",
+              "clientImageQuality"
+            ],
+            "additionalProperties": false
+          },
+          "map": {
+            "type": "object",
+            "properties": {
+              "cityCenter": {
+                "type": "object",
+                "properties": {
+                  "lat": {
+                    "type": "number"
+                  },
+                  "lng": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "lat",
+                  "lng"
+                ],
+                "additionalProperties": false
+              },
+              "cityZoom": {
+                "type": "number"
+              },
+              "caseZoom": {
+                "type": "number"
+              },
+              "coordinateBounds": {
+                "type": "object",
+                "properties": {
+                  "minLat": {
+                    "type": "number"
+                  },
+                  "maxLat": {
+                    "type": "number"
+                  },
+                  "minLng": {
+                    "type": "number"
+                  },
+                  "maxLng": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "minLat",
+                  "maxLat",
+                  "minLng",
+                  "maxLng"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "cityCenter",
+              "cityZoom",
+              "caseZoom",
+              "coordinateBounds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "apiVersion",
+          "minSupportedAppVersion",
+          "oauthProviders",
+          "activeMunicipios",
+          "limits",
+          "map"
+        ],
+        "additionalProperties": false
+      },
+      "ScanResolution": {
+        "description": "Resultado de acercar el teléfono a un collar: qué vista mostrar y el token de escaneo si aplica.",
+        "type": "object",
+        "properties": {
+          "view": {
+            "type": "string",
+            "enum": [
+              "GUARDIAN",
+              "FINDER",
+              "ACTIVATION",
+              "NEUTRAL"
+            ],
+            "description": "Vista que debe mostrar el cliente"
+          },
+          "tagStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "FABRICADO",
+                  "LISTO",
+                  "ACTIVO",
+                  "EN_REVISION",
+                  "REVOCADO"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Solo cuando la vista no es neutra"
+          },
+          "scanToken": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Prueba de presencia física para las acciones de la vista"
+          },
+          "expiresAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "view",
+          "tagStatus",
+          "scanToken",
+          "expiresAt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Token de sesión de Better Auth (plugin bearer): se obtiene del encabezado set-auth-token al iniciar sesión."
+      },
+      "scanToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-scan-token",
+        "description": "Token de escaneo emitido al verificar una lectura del collar; vigente unos minutos y de un solo uso para avisar."
+      }
+    }
+  }
+}

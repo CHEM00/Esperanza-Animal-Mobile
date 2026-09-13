@@ -304,20 +304,37 @@ entorno de pruebas.
 ## S10 · Móvil: cimientos
 
 **Repositorio:** este. **Cubre:** RF-A1 a RF-A5, RF-N3, RNF-5, RNF-8, RNF-9.
+**Estado:** código implementado y verificado en local el 2026-09-13 (typecheck, lint,
+35 pruebas, evaluación de `app.config.ts` y bundle de Android). Pendiente lo que exige
+cuentas y dispositivos (abajo).
 
-- [ ] Proyecto Expo con TypeScript estricto, ESLint con reglas de capas, estructura del
-      documento 06 §2.
-- [ ] `core/config` validado al arrancar; perfiles EAS `development`, `preview`,
-      `production`.
-- [ ] `api:generate` y `api:check` contra `contract.lock.json`; envoltura HTTP con
-      correlación y Problem Details.
-- [ ] `tokens:sync` y `tokens:check`; tema claro y oscuro con fuentes empaquetadas.
-- [ ] Navegación: pestañas nativas, pila nativa, mapa de enlaces `core/navigation/links.ts`.
-- [ ] Autenticación: Google nativo, Apple nativo, Microsoft por navegador; sesión en
-      almacenamiento seguro; `401` global.
-- [ ] Configuración remota y pantalla de actualización obligatoria (M11).
-- [ ] CI: lint, typecheck, pruebas, `api:check`, `tokens:check`.
-- [ ] Primera build de desarrollo instalada en un Android y en el iPhone vía EAS.
+- [x] Proyecto Expo SDK 57 con TypeScript estricto, ESLint con reglas de capas
+      (`eslint.config.js`), estructura del documento 06 §2.
+- [x] `core/config` validado al arrancar (`parseAppConfig`); `app.config.ts` con
+      identidad y dominios desde `config/build-config.js`; `eas.json` con perfiles
+      `development`, `preview`, `production`.
+- [x] `contract:pull` (copia versionada con `contract.lock.json`), `api:generate` y
+      `api:check`; cliente `openapi-fetch` con correlación, dispositivo y token portador;
+      Problem Details a `ApiError` y textos por código.
+- [x] `tokens:sync` y `tokens:check` desde `tokens.css` y `globals.css` de la web; tema
+      claro y oscuro con Quicksand, Space Grotesk e Inter empaquetadas.
+- [x] Navegación: pestañas nativas, pila nativa, `core/navigation/links.ts` con la misma
+      fuente de rutas que los intent filters y los applinks (`config/deep-link-paths.json`).
+- [x] Autenticación: Google nativo y Apple nativo con ID token, sesión en almacenamiento
+      seguro, cierre de sesión que limpia local aunque el servidor falle.
+- [ ] Microsoft por navegador del sistema: requiere el plugin Expo de Better Auth en el
+      backend (documento 06, notas de S10).
+- [ ] `401` global: se resuelve en S11 junto con la primera pantalla que lo necesite.
+- [x] Configuración remota como primer request, pantalla de reintento sin red y
+      actualización obligatoria (M11).
+- [x] Pestaña Perfil mínima que ejercita el ciclo completo: entrar, `GET /api/v1/me` con
+      token portador, salir.
+- [x] CI en GitHub Actions: lint, typecheck, pruebas, `api:check`, `tokens:check`,
+      evaluación de la configuración de Expo.
+- [ ] **Pendiente de cuentas y dispositivos:** cuenta de Expo (`eas init` y
+      `EAS_PROJECT_ID`), client IDs de Google de tipo Android e iOS, cuenta de Apple para
+      Sign in with Apple, y la primera build de desarrollo instalada en un Android y en
+      el iPhone. Sin SDK de Android en la máquina, la build local no es posible.
 
 **Aceptación:** la app arranca en ambos dispositivos, inicia sesión con Google y Apple
 contra el entorno de pruebas, muestra `GET /api/v1/me` y CI está en verde.

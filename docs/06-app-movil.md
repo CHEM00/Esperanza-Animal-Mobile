@@ -21,6 +21,20 @@
 Las versiones se fijan al crear el proyecto (sección S10) con la SDK estable de Expo del
 momento y quedan en `package.json`; este documento no las repite.
 
+Notas de S10 (2026-09-13, Expo SDK 57):
+
+- Las pestañas nativas se importan de `expo-router/unstable-native-tabs`, la única
+  entrada que expone el SDK. Están detrás de un solo archivo (`app/(tabs)/_layout.tsx`)
+  para cambiar a las pestañas clásicas si la API se rompe.
+- TypeScript queda en la rama 5.9 porque `openapi-typescript` aún no admite la 6.
+- `react-dom` se fija a la versión de `react` con `overrides`: Better Auth y Expo lo
+  declaran como par opcional y npm intentaba instalar una versión incompatible.
+- La configuración de build vive en `config/build-config.js` (JavaScript con JSDoc):
+  el cargador de configuración de Expo no resuelve módulos TypeScript locales.
+- Microsoft por navegador del sistema exige el plugin Expo de Better Auth también en
+  el servidor; queda para cuando el backend lo incorpore (nueva dependencia con
+  regeneración del lockfile en Linux).
+
 ## 2. Estructura de carpetas
 
 ```
