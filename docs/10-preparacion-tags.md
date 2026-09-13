@@ -13,8 +13,10 @@ código. Todo lo que sigue se construye antes, en las secciones S1 y S2 del plan
       llaves y hora. En producción esa bandera está prohibida y la ruta redirige a `/collar`.
 - [x] Endpoint `POST /api/v1/scans/nfc` respondiendo `view: NEUTRAL` para tags no activos
       y `ACTIVATION` para `LISTO` con sesión.
-- [x] `.env` local con `NFC_ALLOW_FACTORY_KEYS=true` y `NFC_SCAN_DIAGNOSTICS=true` (la
-      versión 0 de llaves es «fábrica»: todo ceros, sin diversificar).
+- [x] `.env.development` local con `NFC_ALLOW_FACTORY_KEYS=true` y
+      `NFC_SCAN_DIAGNOSTICS=true` (la versión 0 de llaves es «fábrica»: todo ceros, sin
+      diversificar). Van ahí y no en `.env` porque `next build` corre en producción y la
+      validación las prohíbe.
 - [x] `node scripts/seed-tag-prueba.mjs <UID>` crea el lote de pruebas y el tag en estado
       `LISTO` con versión 0. Probado con el UID del vector AN12196 p. 12.
 - [ ] Backend accesible por HTTPS desde los teléfonos (túnel de desarrollo o el entorno de
