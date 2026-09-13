@@ -72,15 +72,14 @@ no levanta. Las opcionales apagan la función, como hoy con VAPID.
 
 | Variable | Tipo | Uso |
 |---|---|---|
-| `NFC_META_READ_KEY_V1` | 32 hex | Llave SDMMetaRead común (doc 04 §3) |
+| `NFC_META_READ_KEY_V1` | 32 hex | Llave SDMMetaRead común (doc 04 §3). Las tres llaves de la versión van juntas |
 | `NFC_FILE_READ_MASTER_KEY_V1` | 32 hex | Maestra para derivar SDMFileRead por tag |
 | `NFC_APP_MASTER_KEY_V1` | 32 hex | Maestra para derivar la Key 0 y las llaves 3 y 4 |
-| `NFC_KEY_VERSION_CURRENT` | entero | Versión que reciben los tags nuevos |
-| `NFC_SYSTEM_IDENTIFIER` | texto | Componente fijo de la diversificación AN10922 |
-| `NFC_SCAN_DIAGNOSTICS` | booleano, solo fuera de producción | Página de diagnóstico de `/t` (doc 10) |
+| `NFC_SYSTEM_IDENTIFIER` | texto, hasta 23 caracteres | Componente fijo de la diversificación; obligatoria con las llaves. La versión vigente es la más alta configurada, no hay variable aparte |
+| `NFC_ALLOW_FACTORY_KEYS` | booleano, prohibida en producción | Acepta chips con llaves de fábrica (versión 0) para la primera prueba (doc 10) |
+| `NFC_SCAN_DIAGNOSTICS` | booleano, prohibida en producción | Página de diagnóstico de `/t` (doc 10) |
 | `DATA_ENCRYPTION_MASTER_KEY_V1` | 64 hex | Llave maestra del cifrado de sobre (ADR-004) |
 | `DATA_ENCRYPTION_KEY_VERSION_CURRENT` | entero | Versión para registros nuevos |
-| `HASH_SALT` | 32 hex | Sal para hashes de IP y dispositivo |
 | `FCM_SERVICE_ACCOUNT_JSON` | JSON | Remitente FCM (Android) |
 | `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_KEY_P8`, `APNS_TOPIC` | texto | Remitente APNs (iOS); `APNS_TOPIC` es el bundle id |
 | `ANDROID_PACKAGE_NAME`, `ANDROID_CERT_SHA256` | texto | App Links (renombre de `TWA_*`) |
@@ -89,8 +88,10 @@ no levanta. Las opcionales apagan la función, como hoy con VAPID.
 | `MOBILE_APP_SCHEME` | texto | Esquema de retorno OAuth registrado en `trustedOrigins` |
 | `MIN_SUPPORTED_APP_VERSION` | semver | Configuración remota |
 
-Los valores con llaves de fábrica (todo ceros) se usan **solo** en local para la primera
-lectura de chips (documento 10).
+Los hashes de IP y de identificador de dispositivo en la bitácora de escaneos usan una
+llave derivada de `BETTER_AUTH_SECRET` con HKDF y un propósito fijo; no necesitan
+variable propia. Las llaves de fábrica (todo ceros) se usan **solo** en local para la
+primera lectura de chips (documento 10), con `NFC_ALLOW_FACTORY_KEYS=true`.
 
 ## 7. Variables de la app móvil
 

@@ -18,7 +18,7 @@
 |---|---|---|
 | Sesión de usuario | Better Auth con plugin **bearer**: la app envía `Authorization: Bearer <token>`; el token se obtiene del encabezado `set-auth-token` al iniciar sesión y se guarda en almacenamiento seguro | Todo lo que requiere usuario |
 | Inicio de sesión nativo | `POST /api/auth/sign-in/social` con `idToken` para Google y Apple, obtenido del selector de cuentas nativo. Microsoft usa el flujo de navegador del sistema mediante el plugin Expo de Better Auth salvo que en implementación se confirme soporte de ID token | RF-A2 |
-| Token de escaneo | Encabezado `X-Scan-Token` | Endpoints de hallazgo y activación |
+| Token de escaneo | Encabezado `x-scan-token` (política `scanToken`; esquema `scanToken` en el contrato) | Endpoints de hallazgo y activación |
 | Administrador | Sesión con rol `admin` | Endpoints internos |
 | Cron | `Authorization: Bearer <CRON_SECRET>` | `/api/ciclo-vida`, existente |
 

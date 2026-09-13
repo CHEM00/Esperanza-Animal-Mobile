@@ -114,23 +114,46 @@ está desactualizado; la web sigue pasando `npm test` y `npm run build`.
 
 **Repositorio:** `esperanza-animal`. **Cubre:** RF-E2, RF-E6, RF-F2, SEG-1, SEG-2, SEG-8,
 SEG-10. **Hito:** M1 «listo para chips» (documento 10 §1).
+**Estado:** implementada y probada en vivo el 2026-09-13 en la rama
+`feat/s1-cimientos-api-v1` (mismo branch que S1). **Hito M1 alcanzado.**
 
-- [ ] `lib/nfc/`: AES-CMAC, descifrado CBC de PICCData, parseo del bloque, derivación de
-      llave de sesión, verificación en tiempo constante, diversificación AN10922. Sin
-      Prisma ni HTTP.
-- [ ] Pruebas de `lib/nfc` con los vectores de llaves cero (doc 04 §4) y los de AN12196
-      transcritos del documento oficial.
-- [ ] Migración `tags_and_scans`.
-- [ ] `features/tags`: tabla de transiciones de `TagStatus`, `constants.ts`, servicio de
-      contador y replays.
-- [ ] `features/scans`: `verifyAndRecord` (verifica, crea `Scan`, emite `ScanSession`),
-      estrategias de vista, `POST /api/v1/scans/nfc`.
-- [ ] Ruta web `GET /t` con redirección a `/encontre/{token}` (la página llega en S4; por
-      ahora redirige a `/collar`) y modo diagnóstico por `NFC_SCAN_DIAGNOSTICS`, prohibido
-      en producción por validación de entorno.
-- [ ] Página neutra `GET /collar`.
-- [ ] Script `scripts/seed-tag-prueba.mjs <uid>`: crea lote y tag de prueba en local.
-- [ ] Variables `NFC_*` en entorno; llaves cero solo en `.env` local.
+- [x] `lib/nfc/`: AES-CMAC (RFC 4493), descifrado CBC de PICCData, parseo del bloque,
+      llaves de sesión SV1 y SV2, CMAC truncado en tiempo constante, descifrado de datos de
+      archivo, diversificación estilo AN10922 y llavero por versiones (`key-ring.ts`).
+      Sin Prisma ni HTTP.
+- [x] Pruebas: vectores de RFC 4493 §4 y los de AN12196 páginas 12 y 18 (con llaves de
+      fábrica), más un vector con llaves propias, tomados de la implementación de
+      referencia pública `icedevml/sdm-backend`. 31 pruebas en `lib/nfc`.
+- [x] Migración `20260913082045_tags_and_scans`: `TagLot`, `Tag`, `Scan`, `ScanSession`,
+      cinco enums y seis valores nuevos de `AdminActionType`. Sin columnas de mascota.
+- [x] `features/tags`: tabla de transiciones explícita (`state-machine.ts`), constantes,
+      consulta de versión de llaves por UID.
+- [x] `features/scans`: `resolveNfcScan` (verifica, anti-replay atómico con `updateMany`
+      sobre el contador, crea `Scan`, emite `ScanSession`), estrategia de vista por
+      estado, proyección pública sin motivo de rechazo, `POST /api/v1/scans/nfc`.
+- [x] Política `scanToken` en la capa de API (cabecera `x-scan-token`, esquema de
+      seguridad propio en el contrato, códigos `scan.token_required` y
+      `scan.token_invalid`), lista para los endpoints de S4.
+- [x] Página `GET /t` con diagnóstico por `NFC_SCAN_DIAGNOSTICS` y redirección a
+      `/collar`; página neutra `/collar`. Límite de tasa con el perfil `scan`.
+- [x] `scripts/seed-tag-prueba.mjs <uid>`.
+- [x] Variables `NFC_META_READ_KEY_V1`, `NFC_FILE_READ_MASTER_KEY_V1`,
+      `NFC_APP_MASTER_KEY_V1`, `NFC_SYSTEM_IDENTIFIER`, `NFC_ALLOW_FACTORY_KEYS`,
+      `NFC_SCAN_DIAGNOSTICS`; las banderas están prohibidas en producción por validación.
+
+**Prueba en vivo realizada** (Docker con Postgres 16, `next dev`, tag del vector AN12196
+p. 12 sembrado con llaves de fábrica): `/t` devolvió `VALIDO` con contador 61; la misma
+URL de nuevo `REPLAY`; firma alterada `FIRMA_INVALIDA`; parámetros rotos
+`FORMATO_INVALIDO`; los cuatro quedaron en la tabla `scan`; `POST /api/v1/scans/nfc`
+respondió solo la vista neutra en todos los casos. La emisión del token (vista
+`ACTIVATION`, que exige sesión) está cubierta por pruebas unitarias del resolvedor y por
+el código del servicio, no por la prueba en vivo.
+
+Desviaciones respecto al diseño, ya reflejadas en los documentos: la entrada de
+diversificación es `UID || número de llave || identificador de sistema` (no hay AID en
+el NTAG 424 DNA); la versión vigente de llaves se deriva de las variables presentes
+(no existe `NFC_KEY_VERSION_CURRENT`); los hashes de IP y dispositivo usan una llave
+derivada de `BETTER_AUTH_SECRET` con HKDF (no existe `HASH_SALT`).
 
 **Aceptación:** una petición HTTP a `/t` con el vector público de llaves cero registra un
 `Scan` `VALIDO` y muestra la página de diagnóstico; repetirla devuelve `REPLAY`; una

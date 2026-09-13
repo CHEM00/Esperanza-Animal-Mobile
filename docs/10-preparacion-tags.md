@@ -5,22 +5,23 @@ código. Todo lo que sigue se construye antes, en las secciones S1 y S2 del plan
 
 ## 1. Qué debe existir antes de que lleguen
 
-- [ ] Verificador SUN en `lib/nfc` con pruebas en verde contra los vectores de llaves
-      cero del documento 04 §4 y los de AN12196.
-- [ ] Migración `tags_and_scans` aplicada en local.
-- [ ] Ruta `GET /t` que verifica, registra el `Scan` y, con `NFC_SCAN_DIAGNOSTICS`
-      activo, muestra una página con UID, contador, resultado, `keyVersion` y hora. En
-      producción esa variable no existe y la ruta redirige a la pantalla neutra.
-- [ ] Endpoint `POST /api/v1/scans/nfc` respondiendo `view: NEUTRAL` para tags `FABRICADO`
+- [x] Verificador SUN en `lib/nfc` con pruebas en verde contra RFC 4493 y AN12196
+      (documento 04 §4).
+- [x] Migración `tags_and_scans` aplicada en local.
+- [x] Ruta `GET /t` que verifica, registra el `Scan` y, con `NFC_SCAN_DIAGNOSTICS=true`,
+      muestra una página con resultado, firma, vista, estado, UID, contador, versión de
+      llaves y hora. En producción esa bandera está prohibida y la ruta redirige a `/collar`.
+- [x] Endpoint `POST /api/v1/scans/nfc` respondiendo `view: NEUTRAL` para tags no activos
       y `ACTIVATION` para `LISTO` con sesión.
-- [ ] Variables locales con llaves de fábrica (todo ceros) y `NFC_KEY_VERSION_CURRENT`
-      igual a `NFC_KEY_VERSION_FACTORY`.
-- [ ] Un lote de pruebas y un registro de tag creados por script de siembra local para el
-      UID que se lea con TagInfo el primer día (el script acepta el UID como argumento).
+- [x] `.env` local con `NFC_ALLOW_FACTORY_KEYS=true` y `NFC_SCAN_DIAGNOSTICS=true` (la
+      versión 0 de llaves es «fábrica»: todo ceros, sin diversificar).
+- [x] `node scripts/seed-tag-prueba.mjs <UID>` crea el lote de pruebas y el tag en estado
+      `LISTO` con versión 0. Probado con el UID del vector AN12196 p. 12.
 - [ ] Backend accesible por HTTPS desde los teléfonos (túnel de desarrollo o el entorno de
       pruebas desplegado), porque los teléfonos abrirán la URL real.
 - [ ] `assetlinks.json` y el archivo de asociación de Apple publicados, aunque la app aún
-      no exista: permiten comprobar que el navegador abre la URL y dejan listo el terreno.
+      no exista: permiten comprobar que el navegador abre la URL y dejan listo el terreno
+      (sección S9).
 
 ## 2. Día uno: verificación del lote
 

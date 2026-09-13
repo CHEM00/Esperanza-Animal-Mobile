@@ -52,9 +52,13 @@ firmar: la Key 2 sigue siendo por tag. Se mitiga con **versión de llave**: cada
 registra `keyVersion`; una rotación introduce `NFC_META_READ_KEY_V2` y los tags nuevos la
 usan sin invalidar los anteriores.
 
-**Diversificación (AN10922, AES-128).** Llave del tag = CMAC(llave maestra,
-`0x01` || UID || identificador de aplicación || identificador de sistema). El identificador
-de sistema es la variable `NFC_SYSTEM_IDENTIFIER`, no un literal en código.
+**Diversificación (estilo AN10922, AES-128).** Llave del tag = CMAC(llave maestra,
+`0x01` || UID || número de llave || identificador de sistema). El NTAG 424 DNA no tiene
+identificador de aplicación como DESFire; el número de llave (0 a 4) separa las
+posiciones de un mismo chip y el identificador de sistema es la variable
+`NFC_SYSTEM_IDENTIFIER`, no un literal en código. El backend es el único que deriva
+(verificación y personalización usan la misma función), así que el sistema es
+consistente por construcción. Implementación: `src/lib/nfc/diversify.ts`.
 
 **Custodia.**
 - Las llaves maestras se generan con un generador criptográfico, 16 bytes, y viven en el
@@ -96,23 +100,19 @@ Constantes de referencia para cifrado de datos de archivo, no usadas hoy: SV1 =
 
 ### Vectores de prueba
 
-Los vectores oficiales están en AN12196 y se transcriben desde el documento de NXP al
-implementar; no se copian aquí para no arrastrar errores de transcripción. Como prueba
-pública adicional, la demo `sdm.nfcdeveloper.com` publica lecturas generadas con
-**llaves de fábrica (todo ceros)**. Con esas llaves el verificador debe aceptar:
+La suite de `src/lib/nfc` del repo web verifica la implementación contra:
 
-```
-picc_data=EF963FF7828658A599F3041510671E88   cmac=94EED9EE65337086
-```
+| Fuente | Vector | Resultado esperado |
+|---|---|---|
+| RFC 4493 §4 | Cuatro ejemplos de AES-CMAC y las subllaves K1 y K2 | Coincidencia exacta |
+| AN12196 p. 12 (llaves de fábrica) | `p=EF963FF7828658A599F3041510671E88`, `m=94EED9EE65337086` | UID `04DE5F1EACC040`, contador 61, firma válida |
+| AN12196 p. 18 (llaves de fábrica) | PICCData `FD91EC26…`, datos cifrados `CEE9A53E…`, CMAC `ECC1E7F6…` | UID `04958CAA5C5E80`, contador 8, datos `xxxxxxxxxxxxxxxx` |
+| Espejo en texto plano (llaves de fábrica) | UID `041E3C8A2D6B80`, contador 6, CMAC `4B00064004B0B3D3` | Firma válida |
+| Llaves propias (referencia `icedevml/sdm-backend`) | Meta `42aff114…`, archivo `b62a9baf…` | UID `041d3c8a2d6b80`, contador 291 |
 
-y, en modo de texto plano (UID y contador sin cifrar; solo para probar el CMAC):
-
-```
-uid=041E3C8A2D6B80   ctr=000006   cmac=4B00064004B0B3D3
-```
-
-La suite del verificador incluye ambos con llaves cero y, cuando lleguen los chips, una
-lectura real capturada con el modo de diagnóstico (documento 10).
+Los valores se tomaron de las pruebas públicas de la implementación de referencia, que
+cita las páginas de AN12196. Cuando lleguen los chips se agrega una lectura real
+capturada con el modo de diagnóstico (documento 10).
 
 ## 5. Token de escaneo
 
