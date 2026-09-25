@@ -102,6 +102,8 @@ Códigos de problema (extracto): `auth.required`, `auth.suspended`, `validation.
 | `POST` / `DELETE /api/v1/pets/{id}/lost` | S guardián | Modo perdido y regreso | S3 |
 | `GET /api/v1/pets/{id}/scans?cursor` | S guardián | Historial de escaneos | S4 |
 | `GET /api/v1/pets/{id}/public-preview` | S guardián | Lo que vería un finder | S4 |
+| `GET /api/v1/pets/{id}/changes?cursor` | S guardián | Historial de cambios del perfil (quién, qué, cuándo) | S19 |
+| `PUT /api/v1/pets/{id}/microchip` | A | Corregir el microchip con motivo; bitácora, historial y alerta | S19 |
 | `GET /api/v1/pets/{id}/guardians` | S guardián | Lista | S3 |
 | `POST /api/v1/pets/{id}/guardian-invites` | S dueño | Enlace de invitación | S3 |
 | `POST /api/v1/guardian-invites/{code}/accept` | S | Aceptar | S3 |

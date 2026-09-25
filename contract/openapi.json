@@ -814,7 +814,7 @@
       },
       "patch": {
         "operationId": "updatePet",
-        "summary": "Editar datos y preferencias de visibilidad",
+        "summary": "Editar datos y preferencias de visibilidad (el microchip no se cambia una vez capturado)",
         "tags": [
           "pets"
         ],
@@ -963,6 +963,19 @@
               "not_found"
             ]
           },
+          "409": {
+            "description": "El microchip ya está registrado y no se puede cambiar (pet.microchip_locked)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "pet.microchip_locked"
+            ]
+          },
           "415": {
             "description": "Tipo de contenido no soportado (unsupported_media_type)",
             "content": {
@@ -974,6 +987,141 @@
             },
             "x-problem-codes": [
               "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/changes": {
+      "get": {
+        "operationId": "listPetChanges",
+        "summary": "Historial de cambios del perfil (quién cambió qué y cuándo)",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de cambios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetChanges"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
             ]
           },
           "429": {
@@ -1695,6 +1843,168 @@
             },
             "x-problem-codes": [
               "publication.daily_limit",
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/microchip": {
+      "put": {
+        "operationId": "correctMicrochip",
+        "summary": "Corregir el microchip de una mascota (administración, con motivo y bitácora)",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "microchipCode": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 15,
+                        "pattern": "^[0-9A-Za-z]+$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 300
+                  }
+                },
+                "required": [
+                  "microchipCode",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Microchip corregido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MicrochipCorrectionResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
               "rate_limited"
             ]
           },
@@ -4234,6 +4544,134 @@
           "user",
           "onboardingComplete",
           "profile"
+        ],
+        "additionalProperties": false
+      },
+      "MicrochipCorrectionResult": {
+        "type": "object",
+        "properties": {
+          "petId": {
+            "type": "string"
+          },
+          "microchipCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "petId",
+          "microchipCode"
+        ],
+        "additionalProperties": false
+      },
+      "PetChanges": {
+        "description": "Historial de cambios del perfil, del más reciente al más antiguo",
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "field": {
+                  "type": "string",
+                  "enum": [
+                    "NOMBRE",
+                    "ESPECIE",
+                    "SEXO",
+                    "DESCRIPCION",
+                    "FECHA_NACIMIENTO",
+                    "ESTERILIZADO",
+                    "MICROCHIP",
+                    "NOTAS_MEDICAS",
+                    "TELEFONO_VISIBLE",
+                    "NOTAS_VISIBLES",
+                    "FOTOS"
+                  ]
+                },
+                "previousValue": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "newValue": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "changedBy": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "field",
+                "previousValue",
+                "newValue",
+                "changedBy",
+                "createdAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
         ],
         "additionalProperties": false
       },

@@ -84,8 +84,25 @@ export interface paths {
         delete: operations["deletePet"];
         options?: never;
         head?: never;
-        /** Editar datos y preferencias de visibilidad */
+        /** Editar datos y preferencias de visibilidad (el microchip no se cambia una vez capturado) */
         patch: operations["updatePet"];
+        trace?: never;
+    };
+    "/api/v1/pets/{id}/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Historial de cambios del perfil (quién cambió qué y cuándo) */
+        get: operations["listPetChanges"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/pets/{id}/guardian-invites": {
@@ -152,6 +169,23 @@ export interface paths {
         post: operations["activateLostMode"];
         /** Confirmar regreso: cierra el caso como encontrado */
         delete: operations["confirmPetFound"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pets/{id}/microchip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Corregir el microchip de una mascota (administración, con motivo y bitácora) */
+        put: operations["correctMicrochip"];
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -495,6 +529,27 @@ export interface components {
                 name: string;
                 role: string | null;
             };
+        };
+        MicrochipCorrectionResult: {
+            microchipCode: string | null;
+            petId: string;
+        };
+        /** @description Historial de cambios del perfil, del más reciente al más antiguo */
+        PetChanges: {
+            items: {
+                changedBy: {
+                    id: string;
+                    name: string;
+                } | null;
+                /** Format: date-time */
+                createdAt: string;
+                /** @enum {string} */
+                field: "NOMBRE" | "ESPECIE" | "SEXO" | "DESCRIPCION" | "FECHA_NACIMIENTO" | "ESTERILIZADO" | "MICROCHIP" | "NOTAS_MEDICAS" | "TELEFONO_VISIBLE" | "NOTAS_VISIBLES" | "FOTOS";
+                id: string;
+                newValue: string | null;
+                previousValue: string | null;
+            }[];
+            nextCursor: string | null;
         };
         /** @description Perfil completo de una mascota para sus guardianes */
         PetDetail: {
@@ -1331,8 +1386,96 @@ export interface operations {
                     "application/problem+json": components["schemas"]["Problem"];
                 };
             };
+            /** @description El microchip ya está registrado y no se puede cambiar (pet.microchip_locked) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
             /** @description Tipo de contenido no soportado (unsupported_media_type) */
             415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Demasiadas peticiones (rate_limited) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Error interno (internal_error) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    listPetChanges: {
+        parameters: {
+            query: {
+                cursor?: string;
+                limit: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de cambios */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PetChanges"];
+                };
+            };
+            /** @description Datos inválidos (validation.failed) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Se requiere iniciar sesión (auth.required) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Cuenta suspendida (auth.suspended) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description No encontrado (not_found) */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1775,6 +1918,98 @@ export interface operations {
             };
             /** @description La mascota no está en el estado necesario (pet.invalid_state) */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Demasiadas peticiones (rate_limited) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Error interno (internal_error) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    correctMicrochip: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    microchipCode: string | null;
+                    reason: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Microchip corregido */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MicrochipCorrectionResult"];
+                };
+            };
+            /** @description Datos inválidos (validation.failed) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Se requiere iniciar sesión (auth.required) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Cuenta suspendida (auth.suspended) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description No encontrado (not_found) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Tipo de contenido no soportado (unsupported_media_type) */
+            415: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -258,6 +258,9 @@ y la app los recibe por el contrato o por configuración remota, sin duplicarlos
 | `NEAREST_CITY_MAX_KM` | 60 | nuevo (S18) | ídem |
 | `CITY_COOKIE_MAX_AGE_SECONDS` | 1 año | nuevo (S18) | `features/cities/cookie.ts` |
 | `NEARBY_CANDIDATES` | 200 | nuevo (S18) | `features/feed/queries.ts` |
+| `CHANGE_VALUE_MAX_LENGTH` | 120 | nuevo (S19) | `features/pets/change-log.ts` |
+| `PET_CHANGES_PAGE_SIZE` | 30 | nuevo (S19) | `features/pets/constants.ts` |
+| `MX_COUNTRY_CODE` | 52 | nuevo (S19) | `lib/contact-links.ts` |
 | `REPLAY_SUSPICION_THRESHOLD` | 3 intentos | nuevo | ídem |
 | `APPROX_LOCATION_DECIMALS` | 3 (unos 110 m) | nuevo | ídem |
 | `FINDER_MESSAGE_MAX_LENGTH` | 300 | nuevo | ídem |

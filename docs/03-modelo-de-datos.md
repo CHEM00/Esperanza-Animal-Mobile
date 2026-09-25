@@ -83,6 +83,17 @@ Archivo en `{UPLOADS_DIR}/pets/{petId}/{id}.webp`. El módulo de almacenamiento 
 **ámbito** (`user` o `pet`) en lugar de asumir siempre un usuario; el resolvedor de
 `/fotos/{id}` agrega `PetPhoto` y `FinderReport` a su cadena de búsqueda.
 
+### `PetChangeLog` → `pet_change_log` (S19)
+
+`id`, `petId` (Cascade), `changedById` (sin FK: el historial sobrevive a la cuenta),
+`field PetChangeField` (`NOMBRE`, `ESPECIE`, `SEXO`, `DESCRIPCION`, `FECHA_NACIMIENTO`,
+`ESTERILIZADO`, `MICROCHIP`, `NOTAS_MEDICAS`, `TELEFONO_VISIBLE`, `NOTAS_VISIBLES`, `FOTOS`),
+`previousValue String?`, `newValue String?` (texto legible recortado a
+`CHANGE_VALUE_MAX_LENGTH`), `createdAt`. Índice `[petId, createdAt desc]`. Lo escriben las
+mismas transacciones que cambian el perfil o sus fotos; lo lee cualquier guardián. El
+microchip (`Pet.microchipCode`) es inmutable una vez capturado: solo `CORREGIR_MICROCHIP`
+(administración, con motivo) lo cambia.
+
 ### `PetGuardian` → `pet_guardian`
 
 `id`, `petId` (Cascade), `userId` (Cascade), `role GuardianRole`, `createdAt`.

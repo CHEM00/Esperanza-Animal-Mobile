@@ -583,24 +583,46 @@ con la consulta por área visible.
 
 ## S19 · Backend: identidad de la mascota y contacto del finder
 
-**Repositorio:** `esperanza-animal`. **Cubre:** RF-C9, RF-C10, RF-F11. Acordada el
-2026-09-24 como respuesta a la propuesta de perfiles no editables (ADR-013): la protección
-contra fraude vive en el chip y en la activación física; lo que sí se protege es la
-identidad de la mascota.
+**Repositorio:** `esperanza-animal`. **Cubre:** RF-C9, RF-C10, RF-F11 (ADR-013).
+**Estado:** implementada y probada en vivo el 2026-09-25 (commit en `main`).
 
-- [ ] `microchipCode` inmutable una vez capturado: `PATCH /pets/{id}` lo rechaza con
-      `pet.microchip_locked`; solo un administrador lo corrige con motivo y bitácora
-      (`CORREGIR_MICROCHIP`) (RF-C9).
-- [ ] `PetChangeLog` (quién cambió qué campo y cuándo), visible a todos los guardianes en
-      `GET /pets/{id}/changes`; alerta `PERFIL_MASCOTA` a los demás guardianes al cambiar
-      nombre, fotos o microchip (RF-C10).
-- [ ] Vista de finder: con opt-in del dueño, botones «WhatsApp» (`wa.me/52…`) y «Llamar»
-      (`tel:`) en la tarjeta y en la confirmación del aviso (RF-F11).
-- [ ] Pruebas: bloqueo del microchip, bitácora por campo, enlaces de contacto.
+- [x] Migración `pet_change_log`: modelo `PetChangeLog` (campo, valor anterior y nuevo como
+      texto recortado a `CHANGE_VALUE_MAX_LENGTH`; `changedById` sin FK), enum
+      `PetChangeField`, `AlertType.PERFIL_MASCOTA` y `AdminActionType.CORREGIR_MICROCHIP`.
+- [x] `features/pets/microchip.ts`: `decideMicrochipChange` (primera captura permitida;
+      cualquier cambio posterior responde `pet.microchip_locked`, 409).
+- [x] `features/pets/change-log.ts`: `diffPetPatch` (una entrada por campo que cambia de
+      verdad; especie y detalle juntos), cambios de fotos (conteo antes y después; reordenar
+      solo se registra) y `alertableFields` (nombre, microchip y fotos).
+- [x] `updatePet`, `addPetPhotos`, `removePetPhoto` y `reorderPetPhotos` escriben el
+      historial en la misma transacción; evento `pet.profile-changed` → alerta
+      `PERFIL_MASCOTA` y push a los demás guardianes (nunca a quien editó).
+- [x] `GET /api/v1/pets/{id}/changes?cursor&limit` (cualquier guardián; nombre de quien
+      cambió o null si la cuenta ya no existe) y `PUT /api/v1/pets/{id}/microchip` (rol
+      `admin`, motivo; bitácora `CORREGIR_MICROCHIP`, historial y alerta; `null` quita un
+      microchip capturado por error).
+- [x] `lib/contact-links.ts` (`whatsappUrl`, `telUrl`, lada `+52`) y `ContactButtons` en la
+      tarjeta pública y en la confirmación del aviso; el detalle del caso usa el mismo helper.
+- [x] Fila «Cambió el perfil de …» en `/alertas`. Contrato y cliente móvil regenerados.
+- [x] Pruebas: 224 en verde (decisión del microchip, diff del historial, fotos, campos que
+      alertan, enlaces de contacto); `typecheck`, `lint` y `next build` limpios.
 
-**Aceptación:** editar el microchip por API falla con el código estable; un guardián ve el
-historial de cambios; en `/encontre/{token}` de una mascota con opt-in aparecen ambos
-botones.
+**Prueba en vivo realizada** (2026-09-25, 20 comprobaciones): PATCH del microchip → 409
+`pet.microchip_locked`; el mismo valor no es cambio; editar nombre y descripción deja dos
+entradas con quién las hizo y alerta al guardián, no al dueño; agregar foto registra «1 foto →
+2 fotos» y alerta; paginación por cursor; quien no es guardián recibe 404; `PUT /microchip`
+sin rol → 404 y con admin → bitácora, historial y alerta al dueño; primera captura en una
+mascota sin microchip → 200 con entrada null → valor; `/alertas` del guardián muestra la
+fila; `/encontre` de una mascota perdida con opt-in muestra WhatsApp y Llamar con `+52`, el
+aviso devuelve el teléfono y por QR no hay botones.
+
+Desviaciones respecto al diseño, ya reflejadas en los documentos: la corrección
+administrativa vive en la API (`PUT /pets/{id}/microchip`, rol admin) y no en una página del
+panel, porque las páginas de mascotas de administración llegan con S8; los valores del
+historial se guardan como texto legible y recortado, no como JSON: es un resumen para
+guardianes, no un respaldo.
+
+**Aceptación:** cumplida (ver prueba en vivo).
 
 ---
 
