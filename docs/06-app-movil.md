@@ -136,7 +136,11 @@ al segmento que lo compra.
 | `esperanzaanimal://auth/callback` | Retorno de OAuth por navegador | Esquema propio, solo autenticación |
 
 El mapa de rutas vive en `core/navigation/links.ts` y es la única fuente; la web publica
-los archivos de asociación con las mismas rutas. El dominio viene de configuración.
+los archivos de asociación con las mismas rutas (`lib/deep-links.ts` del backend, S9). El
+dominio viene de configuración. Excepción: `/publicacion/{id}/cartel` se imprime en el
+navegador; el archivo de Apple lo excluye y en Android la app debe abrirlo en el navegador
+porque los App Links no admiten exclusiones. Si la app no está instalada, los enlaces de
+invitación y transferencia abren páginas web de respaldo que aceptan con sesión.
 
 ## 6. Autenticación
 

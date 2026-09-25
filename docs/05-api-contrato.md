@@ -133,6 +133,8 @@ Códigos de problema (extracto): `auth.required`, `auth.suspended`, `validation.
 | `GET /q/{code}` | Camino QR | S4 |
 | `GET /encontre/{token}` | Vista de finder | S4 |
 | `GET /collar` | Pantalla neutra | S2 |
+| `GET /invitacion/{code}`, `GET /transferencia/{code}` | Respaldo web de los enlaces de guardián y transferencia: explican, mandan al login con retorno y aceptan con sesión | S9 |
+| `GET /.well-known/apple-app-site-association`, `GET /.well-known/assetlinks.json` | Archivos de asociación (enlaces universales y App Links) | S9 |
 
 ### Internos (herramienta de personalización y administración)
 

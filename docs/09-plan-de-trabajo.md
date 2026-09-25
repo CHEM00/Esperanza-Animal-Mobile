@@ -392,15 +392,45 @@ acciones con operador y motivo.
 ## S9 · Backend: enlaces y archivos de asociación
 
 **Repositorio:** `esperanza-animal`. **Cubre:** RF-N2, RF-N4.
+**Estado:** implementada y probada en vivo el 2026-09-25 (commit en `main`). La validación
+con los verificadores públicos de Apple y Google queda para cuando existan los
+identificadores reales en el despliegue (ver abajo).
 
-- [ ] Ruta `/.well-known/apple-app-site-association` con `applinks` para `/t`, `/q`,
-      `/encontre`, `/publicacion`, `/invitacion`, `/transferencia`, desde `IOS_BUNDLE_ID`
-      y `APPLE_TEAM_ID`.
-- [ ] `assetlinks.json`: variables renombradas con alias temporal de `TWA_*`.
-- [ ] Pruebas de ambas rutas con y sin variables.
+- [x] `lib/deep-links.ts`: lista canónica de rutas que abren la app (`/t`, `/q/*`,
+      `/encontre/*`, `/publicacion/*`, `/invitacion/*`, `/transferencia/*`), exclusión del
+      cartel (`/publicacion/*/cartel` se imprime en el navegador), constructores de los dos
+      archivos y `isDeepLinkPath` para validar retornos. `config/deep-link-paths.json` de
+      la app coincide con ella (comprobado a mano; la app debe mandar el cartel al
+      navegador en Android, que no tiene exclusiones).
+- [x] `/.well-known/apple-app-site-association` con `applinks` (appID
+      `APPLE_TEAM_ID.IOS_BUNDLE_ID`, exclusiones primero) y content-type JSON; 404 sin
+      variables.
+- [x] `assetlinks.json` sobre `ANDROID_PACKAGE_NAME` y `ANDROID_CERT_SHA256` (validadas:
+      id de paquete y huellas «AA:BB:…» separadas por coma); `TWA_*` siguen valiendo como
+      alias resueltos en la validación de entorno, así el despliegue actual no cambia.
+- [x] Respaldo web de los enlaces (RF-N4): páginas `/invitacion/{code}` y
+      `/transferencia/{code}` que explican el enlace, mandan al login con retorno
+      (`/login?volver=…`, solo rutas de la app: sin redirecciones abiertas) y aceptan con la
+      sesión usando los mismos servicios que la API; estados usado, vencido e inválido.
+- [x] Pruebas: 248 en verde (rutas y exclusiones, AASA, assetlinks, huellas, retorno del
+      login, alias y validación de entorno); `typecheck`, `lint` y `next build` limpios.
 
-**Aceptación:** los validadores públicos de Apple y Google aceptan ambos archivos en el
-entorno de pruebas.
+**Prueba en vivo realizada** (2026-09-25, 12 comprobaciones, servidor con identificadores de
+prueba y alias `TWA_*`): el archivo de Apple responde JSON con el appID, la exclusión del
+cartel primero y las seis rutas; `assetlinks.json` sigue publicándose con los alias; la
+invitación creada por API apunta a `/invitacion/{code}`; sin sesión la página explica y
+manda al login con retorno, el login lleva el retorno como `callbackURL` y un retorno
+externo se ignora; con sesión ofrece aceptar; tras aceptar el enlace aparece como usado; un
+código inexistente muestra «Enlace no válido»; la transferencia se comporta igual.
+
+**Pendiente en el despliegue (no es código):** en Coolify, `ANDROID_*` puede sustituir a
+`TWA_*` cuando se quiera (no es obligatorio); `APPLE_TEAM_ID` e `IOS_BUNDLE_ID` llegan con
+la cuenta de Apple Developer. Verificar entonces con
+`https://app-site-association.cdn-apple.com/a/v1/rescate.sysosa.com.mx` y
+`digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://rescate.sysosa.com.mx&relation=delegate_permission/common.handle_all_urls`.
+
+**Aceptación:** cumplida en local; la de los validadores públicos, al desplegar con
+identificadores reales.
 
 ---
 
