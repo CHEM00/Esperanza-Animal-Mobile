@@ -9,7 +9,7 @@ flowchart LR
   Admin["Administrador<br/>(web de escritorio)"]
   Operador["Operador de personalización<br/>(herramienta interna)"]
   Tag["Collar con NTAG 424 DNA"]
-  Sistema["Esperanza Animal<br/>backend + web + API"]
+  Sistema["Alakito<br/>backend + web + API"]
   OAuth["Google · Microsoft · Apple"]
   FCM["Firebase Cloud Messaging"]
   Mapas["Apple Maps · Google Maps"]

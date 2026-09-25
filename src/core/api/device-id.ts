@@ -7,7 +7,7 @@ import type { SecureStorage } from "@/core/ports/secure-storage";
  * se borra con la app.
  */
 
-export const DEVICE_ID_KEY = "esperanza-animal.device-id";
+export const DEVICE_ID_KEY = "alakito.device-id";
 
 export function createDeviceIdProvider(
   storage: SecureStorage,

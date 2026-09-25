@@ -1,4 +1,7 @@
-# Documentación de arquitectura · Esperanza Animal móvil
+# Documentación de arquitectura · Alakito móvil
+
+> Marca: **Alakito** desde el 2026-09-25 (antes «Esperanza Animal», ADR-014). Los nombres
+> de repositorio y carpeta conservan el nombre anterior a propósito.
 
 Fecha de la primera versión: 2026-09-13. Esta carpeta es la fuente de verdad del diseño
 del sistema móvil y de las extensiones del backend que lo hacen posible. Cualquier

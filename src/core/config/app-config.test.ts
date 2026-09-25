@@ -6,7 +6,7 @@ const VALID: AppConfigSources = {
     googleWebClientId: "web-id",
     googleIosClientId: "",
   },
-  extra: { environment: "preview", linkDomain: "rescate.example.test", scheme: "esperanzaanimal" },
+  extra: { environment: "preview", linkDomain: "rescate.example.test", scheme: "alakito" },
   appVersion: "0.1.0",
 };
 

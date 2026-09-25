@@ -1,5 +1,8 @@
+/** Nombre de marca visible (ADR-014); el de la tienda y el icono salen de app.config.ts. */
+const APP_NAME = "Alakito";
+
 export const SHELL_STRINGS = {
-  appName: "Esperanza Animal",
+  appName: APP_NAME,
   tabs: {
     feed: "Inicio",
     map: "Mapa",
@@ -18,7 +21,7 @@ export const SHELL_STRINGS = {
   loading: "Cargando…",
   offline: {
     title: "Sin conexión",
-    body: "No pudimos conectar con Esperanza Animal. Revisa tu red e inténtalo de nuevo.",
+    body: `No pudimos conectar con ${APP_NAME}. Revisa tu red e inténtalo de nuevo.`,
     retry: "Reintentar",
   },
 } as const;

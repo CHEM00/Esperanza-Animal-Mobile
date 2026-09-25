@@ -9,8 +9,9 @@ import deepLinkPaths from "./config/deep-link-paths.json";
  * `extra`.
  */
 
-const APP_NAME = "Esperanza Animal";
-const APP_SLUG = "esperanza-animal";
+/** Marca desde el 2026-09-25 (ADR-014); el slug debe coincidir con el proyecto en EAS. */
+const APP_NAME = "Alakito";
+const APP_SLUG = "alakito";
 /** Tokens de marca del splash (tema claro): la pantalla nativa no conoce el tema del usuario. */
 const SPLASH_BACKGROUND = "#f6faf9";
 const ADAPTIVE_ICON_BACKGROUND = "#f6faf9";

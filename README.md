@@ -1,8 +1,13 @@
-# Esperanza Animal · App móvil (Android e iOS)
+# Alakito · App móvil (Android e iOS)
 
-Aplicación nativa de **Esperanza Animal**, la plataforma comunitaria del sur de
-Veracruz para ayudar a las mascotas a volver a casa. Un proyecto de **sysosa**.
+Aplicación nativa de **Alakito**, la plataforma comunitaria y gratuita de México para
+ayudar a las mascotas a volver a casa. Un proyecto de **sysosa**.
 _«Porque ellos también son familia.»_
+
+**Marca.** Hasta el 2026-09-25 el proyecto se llamó «Esperanza Animal», nombre que resultó
+ser una marca registrada de un tercero en México. La marca es **Alakito** (maya _áalak'_,
+«animal de casa», + «-ito») y el dominio canónico `alakito.mx` ([ADR-014](docs/adr/ADR-014-renombre-de-marca.md)).
+El paquete Android `mx.com.sysosa.rescate` no cambia: es el identificador publicado en Play.
 
 Este repositorio contiene la app de consumo para Android e iOS, construida con React
 Native y Expo. El backend, la web y el contrato de la API viven en el repositorio

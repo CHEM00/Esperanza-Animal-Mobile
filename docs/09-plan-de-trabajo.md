@@ -426,8 +426,8 @@ código inexistente muestra «Enlace no válido»; la transferencia se comporta 
 **Pendiente en el despliegue (no es código):** en Coolify, `ANDROID_*` puede sustituir a
 `TWA_*` cuando se quiera (no es obligatorio); `APPLE_TEAM_ID` e `IOS_BUNDLE_ID` llegan con
 la cuenta de Apple Developer. Verificar entonces con
-`https://app-site-association.cdn-apple.com/a/v1/rescate.sysosa.com.mx` y
-`digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://rescate.sysosa.com.mx&relation=delegate_permission/common.handle_all_urls`.
+`https://app-site-association.cdn-apple.com/a/v1/alakito.mx` y
+`digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://alakito.mx&relation=delegate_permission/common.handle_all_urls`.
 
 **Aceptación:** cumplida en local; la de los validadores públicos, al desplegar con
 identificadores reales.

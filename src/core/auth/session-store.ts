@@ -7,7 +7,7 @@ import type { SecureStorage } from "@/core/ports/secure-storage";
  * inyectada para probarla sin dispositivo.
  */
 
-export const SESSION_TOKEN_KEY = "esperanza-animal.session-token";
+export const SESSION_TOKEN_KEY = "alakito.session-token";
 
 export type SessionStatus = "loading" | "anonymous" | "authenticated";
 

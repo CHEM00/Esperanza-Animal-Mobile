@@ -133,7 +133,7 @@ al segmento que lo compra.
 | `https://<dominio>/encontre/{token}` | M6 | ídem |
 | `https://<dominio>/publicacion/{id}` | 4a | ídem |
 | `https://<dominio>/invitacion/{code}`, `/transferencia/{code}` | M9 | ídem |
-| `esperanzaanimal://auth/callback` | Retorno de OAuth por navegador | Esquema propio, solo autenticación |
+| `alakito://auth/callback` | Retorno de OAuth por navegador | Esquema propio, solo autenticación |
 
 El mapa de rutas vive en `core/navigation/links.ts` y es la única fuente; la web publica
 los archivos de asociación con las mismas rutas (`lib/deep-links.ts` del backend, S9). El
@@ -182,7 +182,7 @@ permisos especiales.
 - iOS muestra la hoja del sistema con un texto propio («Acerca la parte superior del
   iPhone al collar»). Android usa modo lector con la pantalla encendida.
 - La URL leída se entrega al mismo resolvedor que los enlaces profundos. Si no es una URL
-  del dominio configurado, se muestra «Este no es un collar de Esperanza Animal».
+  del dominio configurado, se muestra «Este no es un collar de Alakito».
 - El puerto `NfcReader` expone `isAvailable()`, `readUrl()` y `cancel()`; en dispositivos
   sin NFC la pantalla M5 ofrece escanear el QR con la cámara.
 

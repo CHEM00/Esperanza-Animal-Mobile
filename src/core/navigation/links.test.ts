@@ -1,6 +1,6 @@
 import { APP_ROUTES, hrefForDeepLink, resolveDeepLink } from "./links";
 
-const DOMAINS = { linkDomain: "rescate.example.test", scheme: "esperanzaanimal" };
+const DOMAINS = { linkDomain: "rescate.example.test", scheme: "alakito" };
 
 describe("resolveDeepLink", () => {
   it("reconoce la URL del collar con sus parámetros", () => {
@@ -25,7 +25,7 @@ describe("resolveDeepLink", () => {
   });
 
   it("acepta el esquema propio de la app", () => {
-    expect(resolveDeepLink("esperanzaanimal://invitacion/c0d3", DOMAINS)).toMatchObject({
+    expect(resolveDeepLink("alakito://invitacion/c0d3", DOMAINS)).toMatchObject({
       kind: "guardianInvite",
       segment: "c0d3",
     });

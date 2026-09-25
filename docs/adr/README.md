@@ -19,3 +19,4 @@ anterior pasa a estado «Reemplazada por ADR-xxx».
 | [011](ADR-011-sin-direccion-del-dueno.md) | No se almacena la dirección del dueño | Aceptada |
 | [012](ADR-012-herramienta-escritorio-pcsc.md) | La herramienta de personalización corre en escritorio con un lector PC/SC (ACR122U) | Aceptada |
 | [013](ADR-013-venta-fuera-de-la-plataforma.md) | La venta del collar ocurre fuera de la plataforma; el dueño registra a su mascota | Aceptada |
+| [014](ADR-014-renombre-de-marca.md) | La marca es «Alakito» y el dominio canónico `alakito.mx`; los identificadores técnicos no siguen a la marca | Aceptada |

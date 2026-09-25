@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Esperanza Animal API v1",
+    "title": "Alakito API v1",
     "version": "1",
-    "description": "Contrato que consume la app móvil de Esperanza Animal. Se genera desde las declaraciones de ruta del backend; no se edita a mano."
+    "description": "Contrato que consume la app móvil de Alakito. Se genera desde las declaraciones de ruta del backend; no se edita a mano."
   },
   "tags": [
     {

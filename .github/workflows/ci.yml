@@ -13,9 +13,9 @@ jobs:
       # Valores de build ficticios: solo se evalúa app.config.ts, no se compila nada nativo.
       APP_ANDROID_PACKAGE: mx.com.sysosa.rescate
       APP_IOS_BUNDLE_ID: mx.com.sysosa.rescate
-      APP_SCHEME: esperanzaanimal
-      APP_LINK_DOMAIN: rescate.sysosa.com.mx
-      EXPO_PUBLIC_API_BASE_URL: https://rescate.sysosa.com.mx
+      APP_SCHEME: alakito
+      APP_LINK_DOMAIN: alakito.mx
+      EXPO_PUBLIC_API_BASE_URL: https://alakito.mx
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

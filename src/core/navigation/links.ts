@@ -84,7 +84,7 @@ export function resolveDeepLink(url: string, domains: LinkDomains): ResolvedDeep
   if (!parsed) {
     return null;
   }
-  // Con esquema propio, el "host" es el primer segmento: esperanzaanimal://t?p=...
+  // Con esquema propio, el "host" es el primer segmento: alakito://t?p=...
   const pathname =
     parsed.protocol === "https:" ? parsed.pathname : `/${parsed.host}${parsed.pathname}`;
   const normalized = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;

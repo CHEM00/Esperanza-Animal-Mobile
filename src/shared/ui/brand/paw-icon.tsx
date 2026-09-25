@@ -1,6 +1,6 @@
 import Svg, { Circle, Ellipse } from "react-native-svg";
 
-/** Huella: logo de Esperanza Animal, copiado del SVG del handoff (web: paw-icon.tsx). */
+/** Huella: logo de Alakito, copiado del SVG del handoff (web: paw-icon.tsx). */
 interface PawIconProps {
   size?: number;
   color: string;
