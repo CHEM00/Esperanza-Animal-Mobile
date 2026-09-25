@@ -10,6 +10,7 @@ el backend. Los valores numéricos viven en la sección 5 como parámetros con n
 Dentro: app móvil para Android e iOS, extensiones del backend para servirla, sistema de
 collares NFC, herramienta interna de personalización, páginas web del flujo de hallazgo.
 Fuera (fases posteriores, sección 6): App Clip, chat efímero, SMS, widgets, Live Activities.
+Fuera por decisión (ADR-013): pedidos, pagos y envíos del collar; la venta es externa.
 
 ## 1. Actores
 
@@ -59,6 +60,8 @@ Fuera (fases posteriores, sección 6): App Clip, chat efímero, SMS, widgets, Li
 | RF-C6 | Confirmar el regreso marca el caso como `ENCONTRADA` con las reglas existentes y devuelve la mascota a `EN_CASA`. | nuevo |
 | RF-C7 | El dueño decide qué ve un finder: el nombre y la foto siempre; el teléfono directo y las notas médicas solo si los activa. | nuevo |
 | RF-C8 | Un usuario puede tener varias mascotas, hasta `MAX_PETS_PER_USER`. | nuevo |
+| RF-C9 | El código de microchip implantado es inmutable una vez capturado; solo un administrador lo corrige con motivo y bitácora. | nuevo (S19) |
+| RF-C10 | Todo cambio del perfil de la mascota queda en un historial visible a sus guardianes; cambiar nombre, fotos o microchip alerta a los demás guardianes. | nuevo (S19) |
 
 ### D. Guardianes y transferencia
 
@@ -95,6 +98,7 @@ Fuera (fases posteriores, sección 6): App Clip, chat efímero, SMS, widgets, Li
 | RF-F8 | El dueño puede marcar un escaneo como sospechoso; el tag pasa a `EN_REVISION` y deja de emitir avisos hasta que un administrador lo resuelva. | nuevo |
 | RF-F9 | La ubicación del finder se muestra siempre como aproximada y nunca como punto de encuentro; la interfaz sugiere reunirse en lugar público. | nuevo |
 | RF-F10 | El contacto entre finder y dueño se hace por relevo de la plataforma salvo que el dueño haya activado mostrar su teléfono. | nuevo |
+| RF-F11 | Cuando el dueño activa mostrar su teléfono, la vista de finder ofrece botones de WhatsApp y de llamada en lugar del número en texto. | nuevo (S19) |
 
 ### G. Casos (publicaciones)
 
@@ -126,6 +130,7 @@ Fuera (fases posteriores, sección 6): App Clip, chat efímero, SMS, widgets, Li
 | RF-I5 | Contador de no leídas y marcado de leídas al abrir la pantalla, como en la web. | web |
 | RF-I6 | Interruptor «Nuevos casos en mi colonia». | web |
 | RF-I7 | Los avisos de un mismo tag dentro de `SCAN_ALERT_GROUPING_WINDOW_MINUTES` se agrupan en una notificación. | nuevo |
+| RF-I8 | Zona de alertas: en el onboarding la persona marca un punto aproximado (guardado redondeado a `ALERT_ZONE_DECIMALS`, nunca mostrado) y un radio de `ALERT_RADIUS_OPTIONS_KM`; los casos nuevos dentro del radio generan `CASO_CERCANO`, con un push por cubeta de distancia. El punto del mapa es obligatorio en publicaciones y avistamientos. | nuevo (S4) |
 
 ### J. Mapa
 
@@ -170,6 +175,16 @@ Fuera (fases posteriores, sección 6): App Clip, chat efímero, SMS, widgets, Li
 | RF-N2 | El backend publica `assetlinks.json` con la huella de Play y el archivo de asociación de Apple con el identificador de la app. | web + nuevo |
 | RF-N3 | La app consulta al arrancar una configuración remota con la versión mínima soportada y los proveedores OAuth habilitados. | nuevo |
 | RF-N4 | Enlaces que abren la app: tag, QR, hallazgo, publicación e invitaciones. | nuevo |
+
+### O. Cobertura nacional (S18)
+
+| Id | Requisito | Origen |
+|---|---|---|
+| RF-O1 | Todos los municipios del catálogo SEPOMEX están activos; `municipio.active` es un interruptor de apagado por municipio con motivo y bitácora. | nuevo |
+| RF-O2 | Cada municipio tiene un centroide (INEGI) para centrar el mapa y el pin de captura cuando la persona no tiene zona de alertas. | nuevo |
+| RF-O3 | La validación de coordenadas cubre todo México; no hay centro de ciudad fijo en el código. | nuevo |
+| RF-O4 | El feed «Recientes» se acota al municipio de la persona (o al elegido por el visitante); «Cerca de ti» usa el radio de la zona de alertas. | cambio |
+| RF-O5 | La marca, el aviso de privacidad y la ficha de la tienda hablan de México, no de una región. | cambio |
 
 ## 3. Requisitos no funcionales
 
@@ -235,6 +250,9 @@ y la app los recibe por el contrato o por configuración remota, sin duplicarlos
 | `SCAN_ALERT_GROUPING_WINDOW_MINUTES` | 5 | nuevo | ídem |
 | `UNVERIFIED_ALERT_COOLDOWN_MINUTES` | 60 | nuevo | ídem |
 | `UNVERIFIED_ALERTS_PER_TAG_PER_DAY` | 3 | nuevo | ídem |
+| `ALERT_RADIUS_OPTIONS_KM` | 1, 3, 5, 10 | nuevo | `features/alerts/constants.ts` |
+| `DEFAULT_ALERT_RADIUS_KM` | 3 | nuevo | ídem |
+| `ALERT_ZONE_DECIMALS` | 3 (unos 110 m) | nuevo | ídem |
 | `REPLAY_SUSPICION_THRESHOLD` | 3 intentos | nuevo | ídem |
 | `APPROX_LOCATION_DECIMALS` | 3 (unos 110 m) | nuevo | ídem |
 | `FINDER_MESSAGE_MAX_LENGTH` | 300 | nuevo | ídem |

@@ -1,8 +1,9 @@
 # 07 · Herramienta interna de personalización de tags
 
-Aplicación Android de uso exclusivo de sysosa para dejar cada chip en estado `LISTO`.
-Vive en un repositorio interno separado (ADR-005, ADR-007). No se publica en tiendas; se
-distribuye como APK firmado a los dispositivos del operador.
+Herramienta de línea de comandos de uso exclusivo de sysosa para dejar cada chip en estado
+`LISTO`. Corre en la computadora del operador con el lector USB **ACR122U** y vive en
+`tools/personalizador/` del repositorio del backend (ADR-007, ADR-012). No se publica ni
+se distribuye: la ejecuta el operador con su sesión de administrador.
 
 ## 1. Alcance
 
@@ -14,11 +15,11 @@ ver datos de usuarios ni consultar escaneos. Todo eso vive en la web de administ
 
 | Capa | Elección | Motivo |
 |---|---|---|
-| Lenguaje y UI | Kotlin, Jetpack Compose | Estándar de Android |
-| NFC | TapLinx (SDK oficial de NXP para NTAG 424 DNA) | Implementa autenticación EV2, cambio de llaves y configuración SDM; requiere registro en el portal de NXP y clave de licencia por paquete |
-| Red | Cliente HTTP con serialización JSON y el contrato OpenAPI del backend | Mismos tipos que la API |
-| Sesión | Inicio de sesión con la cuenta de administrador por navegador del sistema; token portador en almacenamiento cifrado | Reutiliza Better Auth y el rol `admin` |
-| Arquitectura | Flujo de datos unidireccional, ViewModel por pantalla, capa de datos con repositorio | Referencia oficial de Android |
+| Lenguaje | TypeScript ejecutado con `tsx`; paquete propio con su `package.json` | Reutiliza `src/lib/nfc` del backend (AES-CMAC, diversificación, SUN) sin duplicarlo ni licencias |
+| NFC | Lector ACR122U por PC/SC (`nfc-pcsc`); comandos del NTAG 424 DNA como APDU ISO 7816-4 | La hoja de datos NT4H2421Gx y AN12196 documentan cada comando con vectores de prueba |
+| Red | `fetch` contra los endpoints internos con los tipos del contrato OpenAPI | Mismos tipos que la API |
+| Sesión | Token portador de un administrador (inicio de sesión por navegador y pegado del token; en local, `scripts/dev-session.mjs --admin`) | Reutiliza Better Auth y el rol `admin` |
+| Arquitectura | Módulos puros (tramas, mensajería segura EV2, desplazamientos SDM) separados del adaptador PC/SC; flujo por pasos con confirmación | Probable sin lector; el adaptador es la única pieza con hardware |
 
 ## 3. Flujo de personalización
 
@@ -28,7 +29,7 @@ sequenceDiagram
   participant H as Herramienta
   participant C as Chip
   participant B as Backend
-  O->>H: acerca el chip
+  O->>H: coloca el chip en el lector
   H->>C: leer UID y firma de originalidad
   H->>H: verificar firma NXP; si falla, detener
   H->>B: POST /internal/tags/{uid}/keys

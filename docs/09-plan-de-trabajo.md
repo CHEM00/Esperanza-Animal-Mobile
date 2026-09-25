@@ -28,6 +28,11 @@ flowchart LR
   S1 --> S9[S9 Enlaces]
   S2 --> S3[S3 Mascotas y collar]
   S3 --> S4[S4 Hallazgo y alertas]
+  S4 --> S18[S18 Apertura nacional]
+  S3 --> S19[S19 Identidad y contacto]
+  S18 --> S7
+  S19 --> S13
+  S18 --> S16
   S2 --> S8[S8 Personalización backend]
   S8 --> S15[S15 Herramienta Kotlin]
   S7 --> S11[S11 App comunidad]
@@ -48,8 +53,11 @@ flowchart LR
 ```
 
 Orden recomendado de ejecución: **S1 → S2** (hito «listo para chips», antes de que
-lleguen) → S10 → S3 → S4 → S9 → S13 → S6 → S14 → S7 → S11 → S12 → S5 → S8 → S15 → S16.
-S5 debe cerrarse antes de guardar cualquier dato de contacto nuevo y antes de S16.
+lleguen) → S10 → S3 → S4 → **S18 → S19 → S5** → S9 → S13 → S6 → S14 → S7 → S11 → S12 →
+S8 → S15 → S16. S5 debe cerrarse antes de guardar cualquier dato de contacto nuevo y antes
+de S16; hoy `FinderReport.contactPhone` se guarda en claro, por eso S5 va antes de cualquier
+prueba con personas reales. S18 va antes de las pantallas de la app para que consuman el
+contrato definitivo del feed.
 
 ---
 
@@ -219,26 +227,54 @@ devuelve el tag a `LISTO` y cierra la asignación.
 ## S4 · Backend: hallazgo, alertas y páginas web del flujo
 
 **Repositorio:** `esperanza-animal`. **Cubre:** RF-E5 (silencio, historial), RF-E7, RF-F3 a
-RF-F6, RF-F8 a RF-F10, RF-I2, RF-I7, SEG-6, SEG-7, ADR-008, ADR-010.
+RF-F6, RF-F8 a RF-F10, RF-I2, RF-I7, RF-I8, SEG-6, SEG-7, ADR-008, ADR-010.
+**Estado:** implementada y probada en vivo el 2026-09-24 (commit en `main`).
 
-- [ ] Migración `finder_reports`.
-- [ ] `features/finder`: estrategias de nivel de confianza, cadena de políticas, creación
-      de `FinderReport` con foto y ubicación redondeada, evento `FinderReportCreated`,
-      marcado de sospecha que emite `TagSuspicionReported`.
-- [ ] `features/alerts`: tipos nuevos, prioridad según estado de la mascota, agrupación.
-- [ ] `features/scans`: `POST /api/v1/scans/qr`, `GET /api/v1/scans/{token}`,
-      `POST /api/v1/scans/{token}/finder-report`, `POST /api/v1/scans/{id}/suspicious`.
-- [ ] `features/tags`: silenciar y reactivar; paso a `EN_REVISION`.
-- [ ] `features/pets`: historial de escaneos paginado y vista previa pública.
-- [ ] Páginas web `/encontre/{token}` y `/q/{code}`: ligeras, sin nav, con consentimiento
-      de ubicación, consejos de seguridad y estado de la mascota. `/t` redirige aquí.
-- [ ] Pruebas de políticas (cada rechazo), estrategias, agrupación y páginas.
+- [x] Migraciones `finder_reports_and_alert_zone` (`FinderReport`; tipos de alerta
+      `AVISO_HALLAZGO`, `ESCANEO_COLLAR`, `CASO_CERCANO`, `TRANSFERENCIA_MASCOTA`; zona de
+      alertas en el perfil) y `scan_session_optional_tag` (el camino QR abre sesiones sin
+      collar).
+- [x] `features/finder`: estrategias por nivel de confianza (`trust-levels.ts`), cadena de
+      políticas (`policies.ts`: sesión usable, vista finder, mascota disponible, tag en
+      revisión, silencio, cooldown, tope diario), aviso con foto y ubicación redondeada,
+      historial de escaneos paginado, vista previa pública y marcado de sospecha.
+- [x] `features/domain-events.ts` + `lib/events/bus.ts`: bus de eventos de dominio
+      (diferido desde S3); las alertas son suscriptores que nunca tumban la acción.
+- [x] `features/alerts`: alertas del collar con agrupación por ventana, prioridad y texto
+      según el estado de la mascota (`collar-messages.ts`); casos cercanos por radio
+      (`lib/geo.ts`: Haversine sobre caja envolvente; un push por cubeta de distancia).
+- [x] Rutas: `POST /api/v1/scans/qr`, `GET /api/v1/scans/{token}`,
+      `POST /api/v1/scans/{token}/finder-report`, `GET /pets/{id}/scans`,
+      `GET /pets/{id}/public-preview`, `POST /pets/{id}/scans/{scanId}/suspicious`,
+      `POST /tags/{id}/mute`, `DELETE /tags/{id}/mute`.
+- [x] Páginas `/encontre/{token}` (sin sesión ni navegación; distingue sesión vencida de
+      consumida) y `/q/{code}`; `/t` redirige a `/encontre` con lectura válida.
+- [x] Zona de alertas (RF-I8) en onboarding y ajustes: punto obligatorio redondeado y radio
+      de `ALERT_RADIUS_OPTIONS_KM`; el punto del mapa pasa a ser obligatorio en
+      publicaciones y avistamientos (`features/map/schemas.ts`).
+- [x] Pruebas de políticas (cada rechazo), estrategias, cubetas, mensajes, geometría y
+      bus; 196 en total en verde; `typecheck`, `lint` y `next build` limpios.
 
-**Aceptación:** desde un navegador sin sesión, la URL del vector de prueba lleva a la
-vista de finder y un aviso con ubicación crea `FinderReport` y una `Alert` para cada
-guardián; el segundo aviso dentro del cooldown se rechaza con `scan.cooldown`; el camino
-QR produce una alerta etiquetada «sin verificar» sin canal de contacto; marcar sospechoso
-deja el tag `EN_REVISION` y los avisos siguientes se rechazan.
+**Prueba en vivo realizada** (2026-09-24, Docker con Postgres 16, `next dev`, tag de
+fábrica y URLs SUN generadas con la misma criptografía del vector AN12196; 29
+comprobaciones): activación con token de un solo uso; escaneo anónimo → `FINDER` con alerta
+`ESCANEO_COLLAR` a los dos guardianes; `/encontre/{token}` sin sesión muestra a la mascota;
+aviso con ubicación, foto y teléfono → `FinderReport` con coordenadas a 3 decimales y
+alerta `AVISO_HALLAZGO` a cada guardián; reuso del token → `scan.token_invalid`; segundo
+aviso del mismo dispositivo → `scan.cooldown`; QR → `QR_SIN_VERIFICAR` sin teléfono del
+finder ni del dueño, con alerta; `/q/{code}` redirige a `/encontre`; collar silenciado →
+sin alerta de escaneo y `scan.muted`; historial con el aviso; sospecha → tag
+`EN_REVISION`, aviso `SOSPECHOSO`, y NFC y QR posteriores en vista neutra.
+
+Desviaciones respecto al diseño, ya reflejadas en los documentos: quitar el silencio es
+`DELETE /tags/{id}/mute` (no `POST …/unmute`); `ScanSession.tagId` es opcional para el QR
+de una mascota sin collar; el cooldown reconoce al dispositivo por `x-device-id` **o** por
+IP, así que dos finders distintos detrás de la misma NAT de operadora pueden chocar dentro
+de la ventana (riesgo aceptado, documento 02 §9); la zona de alertas (RF-I8) se agregó aquí
+porque el push de cercanía la necesita; `activateTag` exige explícitamente una sesión con
+tag (corrección de tipos al cerrar la sección).
+
+**Aceptación:** cumplida (ver prueba en vivo).
 
 ---
 
@@ -442,14 +478,26 @@ segundo plano, primer plano y app cerrada.
 
 ## S15 · Herramienta de personalización
 
-**Repositorio:** interno. **Cubre:** RF-L1 a RF-L3, SEG-3.
+**Repositorio:** `esperanza-animal`, carpeta `tools/personalizador/` (ADR-012).
+**Cubre:** RF-L1 a RF-L3, SEG-3. Decidido el 2026-09-24: escritorio con el lector ACR122U
+que ya existe, sin TapLinx.
 
-- [ ] Proyecto Kotlin con TapLinx y licencia; inicio de sesión de administrador.
-- [ ] Lotes; personalización paso a paso; diagnóstico.
-- [ ] Pruebas unitarias de desplazamientos y comandos; QA manual con el documento 10 §5.
+- [ ] Paquete Node propio (fuera del `Dockerfile` de la web) con `nfc-pcsc` sobre el
+      ACR122U; reutiliza `src/lib/nfc` (AES-CMAC, diversificación, SUN) sin duplicarlo.
+- [ ] Comandos del NTAG 424 DNA como APDU ISO 7816-4, en módulos puros probados con los
+      vectores de AN12196: `GetVersion`, `Read_Sig` (firma de originalidad NXP),
+      `AuthenticateEV2First` con mensajería segura, `ChangeKey` (0 a 4),
+      `ChangeFileSettings` con SDM (PICCData cifrado + CMAC; desplazamientos calculados
+      desde la plantilla que entrega el backend), `WriteData` del NDEF.
+- [ ] Sesión de administrador (token portador) contra los endpoints internos de S8; alta
+      de lote; personalización paso a paso con confirmación por chip; reintento con la
+      `keyVersion` emitida si el cambio de llaves quedó a medias; diagnóstico.
+- [ ] Guía de instalación del driver ACS en Windows en el documento 08.
+- [ ] Pruebas unitarias de tramas, desplazamientos y secuencias; QA manual con el
+      documento 10 §5 usando los 5 tags de prueba.
 
-**Aceptación:** un chip de fábrica queda `LISTO` en el entorno de pruebas y TagWriter ya
-no puede reconfigurarlo.
+**Aceptación:** un chip de fábrica queda `LISTO` en el entorno de pruebas con el ACR122U,
+un teléfono abre `/encontre` al acercarlo y TagWriter ya no puede reconfigurarlo.
 
 ---
 
@@ -459,6 +507,11 @@ no puede reconfigurarlo.
 
 - [ ] Aviso de privacidad actualizado: escaneo, ubicación aproximada del finder,
       retención, contacto cifrado; consentimiento en la vista de finder.
+- [ ] Play: la solicitud de producción del TWA fue **denegada** en septiembre de 2026 («más
+      pruebas y más uso»). Cada rechazo abre otra ventana de 14 días sin apelación: mantener
+      a los 12 testers instalados desde Play con 2 o 3 sesiones reales por semana, anotar
+      qué probaron y qué se cambió, y volver a solicitar con esos datos. La app nativa entra
+      como versión nueva del mismo paquete, así que el acceso a producción se hereda.
 - [ ] Play: release de la app nativa sobre el paquete del TWA, formulario de seguridad de
       datos, capturas.
 - [ ] App Store: TestFlight, notas para revisión (uso de NFC, Sign in with Apple),
@@ -469,6 +522,64 @@ no puede reconfigurarlo.
 
 **Aceptación:** ambas tiendas aprobadas; un usuario real completa: instalar, iniciar
 sesión, registrar mascota, activar collar, recibir un aviso de hallazgo.
+
+---
+
+## S18 · Backend y web: apertura nacional
+
+**Repositorio:** `esperanza-animal`. **Cubre:** RF-O1 a RF-O5 (documento 01 §2.O).
+Decidida el 2026-09-24: el collar se venderá en todo México. El flujo de mascotas no
+depende de la colonia y ya es nacional; lo que está acotado al corredor es la comunidad
+(feed, mapa, validación de coordenadas y marca).
+
+- [ ] Migración `municipios_nacionales`: `active = true` en todo el catálogo; el flag queda
+      como interruptor de apagado por municipio, no como puerta de entrada (RF-O1).
+- [ ] ETL `scripts/inegi-a-centroides.mjs` desde el Marco Geoestadístico del INEGI:
+      centroide por municipio (`Municipio.lat`/`lng`), sembrado junto con el catálogo
+      (RF-O2).
+- [ ] `COORDINATE_BOUNDS` pasa a la caja de México (sanidad, no geocerca); `CITY_CENTER`
+      desaparece: el centro del mapa y del pin de captura es la zona de alertas del perfil
+      o el centroide de su municipio; el visitante elige ciudad o usa GPS (RF-O3).
+- [ ] Feed: «Recientes» acotado al municipio del perfil (visitante: municipio elegido,
+      recordado en cookie); «Cerca de ti» por radio desde la zona de alertas con
+      `lib/geo.ts` y el índice de coordenadas de publicaciones; selector de ciudad en el
+      encabezado. La API del feed (S7) nace ya con este contrato (RF-O4).
+- [ ] Marca: `REGION_NAME` → «México» en encabezado, aviso de privacidad, héroe de
+      encontrados y ficha de Play; el README deja de decir Coatzacoalcos (RF-O5).
+- [ ] `GET /api/v1/config` deja de enviar la lista de municipios activos (serían 2,478
+      filas) y la app busca por CP como la web; `ColoniaPicker` sin el mensaje de municipio
+      inactivo.
+- [ ] Administración: filtro por estado y municipio en reportes y publicaciones, y botón de
+      apagado por municipio con motivo y bitácora.
+- [ ] Pruebas: scoping del feed, radio, centroides, bounds; aceptación con un caso en otro
+      estado.
+
+**Aceptación:** una persona con CP de Monterrey completa el onboarding, publica un caso con
+pin en su ciudad y lo ve en «Recientes» y en el mapa centrado en Monterrey; una persona de
+Coatzacoalcos no lo ve en su feed; la web y la API aplican las mismas reglas.
+
+---
+
+## S19 · Backend: identidad de la mascota y contacto del finder
+
+**Repositorio:** `esperanza-animal`. **Cubre:** RF-C9, RF-C10, RF-F11. Acordada el
+2026-09-24 como respuesta a la propuesta de perfiles no editables (ADR-013): la protección
+contra fraude vive en el chip y en la activación física; lo que sí se protege es la
+identidad de la mascota.
+
+- [ ] `microchipCode` inmutable una vez capturado: `PATCH /pets/{id}` lo rechaza con
+      `pet.microchip_locked`; solo un administrador lo corrige con motivo y bitácora
+      (`CORREGIR_MICROCHIP`) (RF-C9).
+- [ ] `PetChangeLog` (quién cambió qué campo y cuándo), visible a todos los guardianes en
+      `GET /pets/{id}/changes`; alerta `PERFIL_MASCOTA` a los demás guardianes al cambiar
+      nombre, fotos o microchip (RF-C10).
+- [ ] Vista de finder: con opt-in del dueño, botones «WhatsApp» (`wa.me/52…`) y «Llamar»
+      (`tel:`) en la tarjeta y en la confirmación del aviso (RF-F11).
+- [ ] Pruebas: bloqueo del microchip, bitácora por campo, enlaces de contacto.
+
+**Aceptación:** editar el microchip por API falla con el código estable; un guardián ve el
+historial de cambios; en `/encontre/{token}` de una mascota con opt-in aparecen ambos
+botones.
 
 ---
 

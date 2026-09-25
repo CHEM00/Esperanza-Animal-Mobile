@@ -11,7 +11,9 @@ un repositorio aparte.
 
 ## Estado
 
-Cimientos de la app implementados (sección S10 del [plan](docs/09-plan-de-trabajo.md)):
+Backend: secciones S1 a S4 del [plan](docs/09-plan-de-trabajo.md) implementadas y probadas
+en vivo en el repositorio `esperanza-animal` (API v1, verificador NFC, mascotas y collar,
+hallazgo y alertas). App: cimientos implementados (sección S10):
 configuración validada, cliente tipado por contrato, sesión con proveedores nativos,
 tema con los tokens de la web, pestañas nativas y puerta de actualización obligatoria.
 Las pantallas de negocio llegan en las secciones S11 a S14.

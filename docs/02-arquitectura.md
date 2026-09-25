@@ -262,3 +262,6 @@ inmediato, pero el servidor es la autoridad.
 | Chips falsificados en el lote | Verificación de originalidad y revocación por lote | Diseñado |
 | Un solo desarrollador para backend y app | Plan por secciones con criterios de aceptación; contrato como frontera | Aceptado |
 | Proveedor de mapas | MapKit y Google Maps por defecto; MapLibre como alternativa detrás del mismo adaptador | Decidir en S11 con costos vigentes |
+| Cooldown de avisos por IP detrás de NAT de operadora (dos finders distintos con la misma IP pública) | La app manda `x-device-id`; la web de finder no. Se vigila la tasa de `scan.cooldown` en producción y, si molesta, la web genera un identificador por navegador | Aceptado (S4) |
+| Moderación con una sola persona a escala nacional | `municipio.active` como interruptor de apagado; filtros por estado y municipio en administración (S18); moderadores regionales cuando haya volumen | Pendiente (S18) |
+| Teléfono del finder en claro hasta S5 | S5 se ejecuta antes de cualquier prueba con personas reales | Pendiente (S5) |

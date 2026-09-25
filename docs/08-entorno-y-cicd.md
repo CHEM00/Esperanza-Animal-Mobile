@@ -10,7 +10,7 @@
 | Emulador Android | — | Requiere Hyper-V o Windows Hypervisor Platform activados en Windows 11 Pro |
 | Expo y EAS CLI | Por instalar | Expo como dependencia del proyecto; EAS CLI global |
 | Xcode | No disponible (no hay Mac) | Las builds de iOS se hacen en la nube con EAS Build |
-| Kotlin para la herramienta interna | Android Studio | Mismo entorno que Android |
+| Lector NFC de escritorio | ACR122U (existe) | Driver de ACS instalado; en Windows, desactivar el driver genérico que el sistema asigna al lector. Personalización de tags (ADR-012) |
 
 **Qué se puede hacer sin Mac:** compilar y firmar iOS en EAS, instalar builds de desarrollo
 en el iPhone por enlace, subir a TestFlight y App Store con EAS Submit.
@@ -29,14 +29,13 @@ Esas tareas están en la fase con entorno macOS (Mac mini, o Mac en la nube rent
 
 | Cuenta | Estado | Para qué |
 |---|---|---|
-| Google Play Console | Existe (TWA publicado) | Publicar la app nativa con el mismo `applicationId` y `versionCode` mayor |
+| Google Play Console | Existe (TWA en prueba cerrada; producción denegada en septiembre de 2026 por uso insuficiente, ver S16) | Publicar la app nativa con el mismo `applicationId` y `versionCode` mayor |
 | Apple Developer Program | Pendiente | Push APNs, Sign in with Apple, TestFlight, App Store, enlaces universales |
 | Proyecto Firebase | Pendiente | FCM para Android |
 | Llave APNs (.p8) | Pendiente, depende de Apple Developer | Push en iOS |
 | Expo / EAS | Pendiente | Builds en la nube, submit |
 | Google Cloud (OAuth) | Existe para web | Clientes OAuth de tipo Android e iOS para login nativo con ID token |
 | Microsoft Entra | Existe para web | Registrar plataforma móvil si se ofrece Microsoft en la app |
-| Portal de NXP | Pendiente | Licencia de TapLinx para la herramienta interna |
 | Gestor de secretos del despliegue (Coolify) | Existe | Llaves maestras NFC, llave maestra de cifrado, credenciales de push |
 
 ## 4. Firma y distribución
