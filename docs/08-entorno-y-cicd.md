@@ -78,8 +78,8 @@ no levanta. Las opcionales apagan la función, como hoy con VAPID.
 | `NFC_SYSTEM_IDENTIFIER` | texto, hasta 23 caracteres | Componente fijo de la diversificación; obligatoria con las llaves. La versión vigente es la más alta configurada, no hay variable aparte |
 | `NFC_ALLOW_FACTORY_KEYS` | booleano, prohibida en producción | Acepta chips con llaves de fábrica (versión 0) para la primera prueba (doc 10) |
 | `NFC_SCAN_DIAGNOSTICS` | booleano, prohibida en producción | Página de diagnóstico de `/t` (doc 10) |
-| `DATA_ENCRYPTION_MASTER_KEY_V1` | 64 hex | Llave maestra del cifrado de sobre (ADR-004) |
-| `DATA_ENCRYPTION_KEY_VERSION_CURRENT` | entero | Versión para registros nuevos |
+| `DATA_ENCRYPTION_MASTER_KEY_V1` | 64 hex, **obligatoria** | Llave maestra del cifrado de sobre (ADR-004); ranuras `V1` a `V9` para rotar |
+| `DATA_ENCRYPTION_KEY_VERSION_CURRENT` | entero, opcional | Versión para registros nuevos; sin ella, la más alta configurada |
 | `FCM_SERVICE_ACCOUNT_JSON` | JSON | Remitente FCM (Android) |
 | `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_KEY_P8`, `APNS_TOPIC` | texto | Remitente APNs (iOS); `APNS_TOPIC` es el bundle id |
 | `ANDROID_PACKAGE_NAME`, `ANDROID_CERT_SHA256` | texto | App Links (renombre de `TWA_*`) |

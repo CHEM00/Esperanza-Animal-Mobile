@@ -143,6 +143,7 @@ Códigos de problema (extracto): `auth.required`, `auth.suspended`, `validation.
 | `POST /api/v1/internal/tags/{uid}/provisioned` | A | Verifica la lectura de prueba y marca `LISTO` | S8 |
 | `POST /api/v1/internal/tags/{uid}/revoke` | A | Revocar con motivo | S8 |
 | `POST /api/v1/internal/tags/{uid}/review` | A | Resolver `EN_REVISION` | S8 |
+| `POST /api/v1/internal/crypto/rewrap` | A | Rotación de la llave maestra por lotes: reenvuelve DEK y recalcula índices; bitácora | S5 |
 
 ## 5. Esquemas principales
 

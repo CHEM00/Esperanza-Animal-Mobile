@@ -225,6 +225,11 @@ ea1.<versionLlaveMaestra>.<dekEnvuelta>.<iv>.<textoCifrado>
 - `iv`: 12 bytes aleatorios, base64url.
 - `textoCifrado`: AES-256-GCM del valor con la llave de datos, etiqueta incluida.
 
+Implementación (S5): el envoltorio de la DEK lleva `ea1.<versión>.dek` como dato
+autenticado y el valor lleva `ea1.valor` (sin versión), así cambiar la versión en el token
+se detecta y la rotación no recifra el valor. Tras el relleno, `Publication.phone` y
+`FinderReport.contactPhone` quedan en NULL hasta la migración que los elimina.
+
 Rotar la llave maestra reenvuelve `dekEnvuelta` por lotes sin recifrar los valores. El
 índice de búsqueda `contactPhoneHmac` es HMAC-SHA256 del teléfono normalizado con una
 llave derivada de la maestra por HKDF con propósito fijo; no es reversible.

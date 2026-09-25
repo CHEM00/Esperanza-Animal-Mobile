@@ -34,6 +34,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/internal/crypto/rewrap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rotación de llave maestra: reenvuelve un lote de campos cifrados y recalcula índices */
+        post: operations["rewrapContacts"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -44,6 +61,23 @@ export interface paths {
         /** Usuario en sesión y estado de su cuenta */
         get: operations["getMe"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Reemplazar teléfonos y contacto de emergencia del perfil (cifrados en reposo) */
+        put: operations["updateMyContact"];
         post?: never;
         delete?: never;
         options?: never;
@@ -468,6 +502,13 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Teléfonos y contacto de emergencia del perfil; cifrados en reposo */
+        ContactProfile: {
+            altPhone: string | null;
+            emergencyName: string | null;
+            emergencyPhone: string | null;
+            phone: string | null;
+        };
         /** @description Aviso enviado y canal de contacto disponible */
         FinderReportResult: {
             /** Format: date-time */
@@ -519,6 +560,7 @@ export interface components {
                 coloniaCp: string | null;
                 coloniaId: string;
                 coloniaName: string;
+                contact: components["schemas"]["ContactProfile"];
                 notifyColonia: boolean;
                 species: ("PERRO" | "GATO" | "OTRO")[];
             } | null;
@@ -710,6 +752,15 @@ export interface components {
             minSupportedAppVersion: string | null;
             /** @description Proveedores de login habilitados, en el orden del diseño */
             oauthProviders: ("google" | "microsoft" | "apple")[];
+        };
+        /** @description Avance de la rotación de la llave maestra */
+        RewrapResult: {
+            /** @description Versión de llave maestra vigente */
+            currentVersion: number;
+            /** @description Campos que aún usan una versión anterior */
+            remaining: number;
+            /** @description Campos reenvueltos en esta llamada */
+            rewrapped: number;
         };
         /** @description Escaneos de una mascota, del más reciente al más antiguo */
         ScanHistory: {
@@ -931,6 +982,99 @@ export interface operations {
             };
         };
     };
+    rewrapContacts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Campos a reenvolver en esta llamada
+                     * @default 200
+                     */
+                    batchSize: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Lote procesado */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RewrapResult"];
+                };
+            };
+            /** @description Datos inválidos (validation.failed) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Se requiere iniciar sesión (auth.required) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Cuenta suspendida (auth.suspended) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description No encontrado (not_found) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Tipo de contenido no soportado (unsupported_media_type) */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Demasiadas peticiones (rate_limited) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Error interno (internal_error) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
     getMe: {
         parameters: {
             query?: never;
@@ -960,6 +1104,98 @@ export interface operations {
             };
             /** @description Cuenta suspendida (auth.suspended) */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Demasiadas peticiones (rate_limited) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Error interno (internal_error) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    updateMyContact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    altPhone?: string | null;
+                    emergencyName?: string | null;
+                    emergencyPhone?: string | null;
+                    phone?: string | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Contacto guardado */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactProfile"];
+                };
+            };
+            /** @description Datos inválidos (validation.failed) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Se requiere iniciar sesión (auth.required) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Cuenta suspendida (auth.suspended) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Completa tu perfil primero (profile.incomplete) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Tipo de contenido no soportado (unsupported_media_type) */
+            415: {
                 headers: {
                     [name: string]: unknown;
                 };

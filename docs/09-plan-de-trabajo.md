@@ -280,19 +280,58 @@ tag (corrección de tipos al cerrar la sección).
 
 ## S5 · Backend: cifrado por campo
 
-**Repositorio:** `esperanza-animal`. **Cubre:** RF-B2, RF-B4, RF-K4, SEG-4, SEG-5, ADR-004.
+**Repositorio:** `esperanza-animal`. **Cubre:** RF-B2, RF-B4, RF-K4 (parcial), SEG-4, SEG-5,
+ADR-004. **Estado:** implementada y probada en vivo el 2026-09-25 (commit en `main`).
 
-- [ ] `lib/crypto/`: formato `ea1`, cifrado de sobre AES-256-GCM, puerto `KeyProvider`
-      con `EnvKeyProvider`, HMAC de índice por HKDF, utilidad de rotación por lotes.
-- [ ] Migración `encrypted_contact_fields`; `PUT /api/v1/me/contact`.
-- [ ] `Publication.phoneEnc`: script de relleno idempotente desde `phone`; `revealPhone`
-      y el cartel usan el descifrado; migración posterior que elimina `phone`.
-- [ ] Bitácora `DESCIFRAR_CONTACTO` en lecturas administrativas.
-- [ ] Pruebas: ida y vuelta, manipulación detectada, rotación, índice HMAC, relleno.
+- [x] `lib/crypto/` con clases y puerto: `KeyProvider` (interfaz) y `EnvKeyProvider`
+      (ranuras `DATA_ENCRYPTION_MASTER_KEY_V1..V9`, vigente la más alta salvo
+      `DATA_ENCRYPTION_KEY_VERSION_CURRENT`), `FieldCipher` (sobre AES-256-GCM, formato
+      `ea1`; la versión va como dato autenticado del envoltorio de la DEK y el valor lleva
+      un AAD sin versión para que la rotación no lo recifre), `BlindIndex` (HMAC por HKDF de
+      la maestra vigente; `candidates` para buscar durante una rotación) y `ContactSealer`
+      (fachada que reúne cifrado e índice; `open` acepta el heredado en claro durante el
+      relleno). Reutiliza `lib/hashing.ts` (HKDF) del rate limit.
+- [x] Migración `encrypted_contact_fields`: `UserProfile.contactPhoneEnc/Hmac`,
+      `altPhoneEnc`, `emergencyNameEnc`, `emergencyPhoneEnc`; `Publication.phone` pasa a
+      opcional y se agregan `phoneEnc` y `phoneHmac` (índice); `FinderReport.contactPhoneEnc`;
+      `AdminActionType.ROTAR_CIFRADO`.
+- [x] Relleno idempotente al arrancar (`sealLegacyContacts` en `instrumentation.ts`): los
+      teléfonos heredados en claro se cifran y el texto en claro se pone a NULL. La columna
+      `phone` se elimina en una migración posterior, cuando producción haya arrancado con S5.
+- [x] Escritura y lectura: publicar, editar y modo perdido guardan `phoneEnc/phoneHmac`;
+      `getPublicationContactPhone` descifra para el número oculto, el cartel y la edición;
+      el aviso del finder guarda `contactPhoneEnc` y se descifra en /alertas y en el
+      historial de escaneos; la vista de finder usa el **teléfono del perfil de contacto del
+      dueño** (RF-C7) y cae al del caso activo.
+- [x] `PUT /api/v1/me/contact` (reemplazo completo; `profile.incomplete` sin onboarding) y
+      `contact` dentro de `profile` en `GET /api/v1/me`.
+- [x] Rotación por lotes: `POST /api/v1/internal/crypto/rewrap` (rol admin, bitácora
+      `ROTAR_CIFRADO`): reenvuelve la DEK con la maestra vigente y recalcula índices hasta
+      `remaining = 0`.
+- [x] Entorno: `DATA_ENCRYPTION_MASTER_KEY_V1` obligatoria (validada al arrancar); dummy en la
+      etapa de build del Dockerfile; `.env.example` con el procedimiento de rotación.
+- [x] Pruebas: 239 en verde (ida y vuelta, manipulación del valor, del envoltorio y de la
+      versión, versión sin llave, rotación sin recifrar, índice determinista y candidatos,
+      transición del heredado, entorno); `typecheck`, `lint` y `next build` limpios.
 
-**Aceptación:** ningún teléfono aparece en claro en la base tras el relleno; la web sigue
-revelando el número con sesión; rotar la llave maestra en local deja todos los registros
-legibles con la nueva versión.
+**Prueba en vivo realizada** (2026-09-25, 16 + 5 comprobaciones): una publicación sembrada
+con teléfono en claro queda cifrada al arrancar (5 publicaciones y 2 avisos heredados de
+pruebas anteriores) y su cartel la descifra; un caso nuevo guarda `ea1.1.` sin texto en
+claro; detalle enmascarado, cartel y edición descifran; `PUT /me/contact` normaliza y
+guarda solo campos `ea1` e índice; `GET /me` devuelve el contacto; `/encontre` usa el
+teléfono del perfil con la mascota en casa; el teléfono del finder viaja cifrado y se lee
+en /alertas y en el historial; cero teléfonos en claro en la base; rewrap sin llave nueva no
+hace nada y sin rol responde 404. Con `V2` en el entorno y el servidor reiniciado: la
+rotación termina con `remaining = 0`, todas las publicaciones quedan en `ea1.2.`, la
+bitácora registra la rotación y el cartel y el contacto siguen legibles.
+
+Desviaciones respecto al diseño, ya reflejadas en los documentos: la bitácora
+`DESCIFRAR_CONTACTO` (RF-K4) espera a S8, porque hoy ninguna pantalla de administración
+lee teléfonos; la rotación es un endpoint interno por lotes y no un script, porque el
+cifrador vive en TypeScript del backend; el índice ciego se deriva de la maestra vigente y
+la rotación lo recalcula (durante una rotación se busca con `candidates`).
+
+**Aceptación:** cumplida (ver prueba en vivo).
 
 ---
 
