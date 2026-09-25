@@ -13,7 +13,16 @@
       "name": "config"
     },
     {
+      "name": "guardians"
+    },
+    {
+      "name": "pets"
+    },
+    {
       "name": "scans"
+    },
+    {
+      "name": "tags"
     }
   ],
   "paths": {
@@ -34,6 +43,147 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/guardian-invites/{code}/accept": {
+      "post": {
+        "operationId": "acceptGuardianInvite",
+        "summary": "Aceptar una invitación de guardián",
+        "tags": [
+          "guardians"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ya eres guardián",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuardianAcceptance"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "La invitación no existe o ya se usó (invite.invalid)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "invite.invalid"
+            ]
+          },
+          "409": {
+            "description": "Alcanzaste el máximo de guardianes (guardian.limit_reached)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "guardian.limit_reached"
+            ]
+          },
+          "410": {
+            "description": "La invitación caducó (invite.expired)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "invite.expired"
+            ]
           },
           "429": {
             "description": "Demasiadas peticiones (rate_limited)",
@@ -124,6 +274,2762 @@
             },
             "x-problem-codes": [
               "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets": {
+      "get": {
+        "operationId": "listPets",
+        "summary": "Mis mascotas",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mascotas en las que soy guardián",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPet",
+        "summary": "Registrar una mascota con fotos",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 40
+                  },
+                  "species": {
+                    "type": "string",
+                    "enum": [
+                      "PERRO",
+                      "GATO",
+                      "OTRO"
+                    ]
+                  },
+                  "speciesDetail": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "sex": {
+                    "default": "DESCONOCIDO",
+                    "type": "string",
+                    "enum": [
+                      "MACHO",
+                      "HEMBRA",
+                      "DESCONOCIDO"
+                    ]
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 400
+                  },
+                  "birthDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "sterilized": {
+                    "type": "boolean"
+                  },
+                  "microchipCode": {
+                    "type": "string",
+                    "maxLength": 15,
+                    "pattern": "^[0-9A-Za-z]+$"
+                  },
+                  "medicalNotes": {
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "showPhoneToFinder": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "showMedicalNotes": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "photos": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Hasta 4 archivos image/*, 8388608 bytes cada uno"
+                  }
+                },
+                "required": [
+                  "name",
+                  "species",
+                  "sex",
+                  "description",
+                  "showPhoneToFinder",
+                  "showMedicalNotes"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mascota creada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Una foto no es válida (photo.invalid) · Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "photo.invalid",
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "409": {
+            "description": "Alcanzaste el máximo de mascotas (pet.limit_reached)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "pet.limit_reached"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}": {
+      "delete": {
+        "operationId": "deletePet",
+        "summary": "Dar de baja una mascota (queda inactiva y libera su collar)",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mascota inactiva",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "La mascota no está en el estado necesario (pet.invalid_state)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "pet.invalid_state"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      },
+      "get": {
+        "operationId": "getPet",
+        "summary": "Perfil de una mascota",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil completo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updatePet",
+        "summary": "Editar datos y preferencias de visibilidad",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 40
+                  },
+                  "species": {
+                    "type": "string",
+                    "enum": [
+                      "PERRO",
+                      "GATO",
+                      "OTRO"
+                    ]
+                  },
+                  "speciesDetail": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "sex": {
+                    "type": "string",
+                    "enum": [
+                      "MACHO",
+                      "HEMBRA",
+                      "DESCONOCIDO"
+                    ]
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 400
+                  },
+                  "birthDate": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "sterilized": {
+                    "type": "boolean"
+                  },
+                  "microchipCode": {
+                    "type": "string",
+                    "maxLength": 15,
+                    "pattern": "^[0-9A-Za-z]+$"
+                  },
+                  "medicalNotes": {
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "showPhoneToFinder": {
+                    "type": "boolean"
+                  },
+                  "showMedicalNotes": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perfil actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/guardian-invites": {
+      "post": {
+        "operationId": "createGuardianInvite",
+        "summary": "Crear enlace de invitación de guardián",
+        "tags": [
+          "guardians"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Enlace de un solo uso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteLink"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "Alcanzaste el máximo de guardianes (guardian.limit_reached)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "guardian.limit_reached"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/guardians": {
+      "get": {
+        "operationId": "listGuardians",
+        "summary": "Guardianes de la mascota",
+        "tags": [
+          "guardians"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dueño y guardianes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuardianList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/guardians/{userId}": {
+      "delete": {
+        "operationId": "removeGuardian",
+        "summary": "Quitar un guardián (el dueño) o dejar de serlo (uno mismo)",
+        "tags": [
+          "guardians"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Guardianes restantes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuardianList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "La mascota no está en el estado necesario (pet.invalid_state)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "pet.invalid_state"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/lost": {
+      "delete": {
+        "operationId": "confirmPetFound",
+        "summary": "Confirmar regreso: cierra el caso como encontrado",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mascota en casa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LostModeResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "La mascota no está en el estado necesario (pet.invalid_state)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "pet.invalid_state"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      },
+      "post": {
+        "operationId": "activateLostMode",
+        "summary": "Activar modo perdido: crea el caso prellenado",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "coloniaId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "locationReference": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 120
+                  },
+                  "phone": {
+                    "type": "string",
+                    "pattern": "^\\d{10}$"
+                  },
+                  "hasReward": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "lat": {
+                    "type": "number",
+                    "minimum": 14.4,
+                    "maximum": 32.8
+                  },
+                  "lng": {
+                    "type": "number",
+                    "minimum": -118.6,
+                    "maximum": -86.6
+                  },
+                  "safetyNoticeAccepted": {
+                    "type": "boolean",
+                    "const": true
+                  },
+                  "liabilityAccepted": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                },
+                "required": [
+                  "coloniaId",
+                  "locationReference",
+                  "phone",
+                  "hasReward",
+                  "lat",
+                  "lng",
+                  "safetyNoticeAccepted",
+                  "liabilityAccepted"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mascota en búsqueda y caso creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LostModeResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Esa colonia no está disponible todavía (colonia.not_selectable) · Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "colonia.not_selectable",
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "La mascota no está en el estado necesario (pet.invalid_state)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "pet.invalid_state"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Alcanzaste el límite de publicaciones por día (publication.daily_limit) · Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "publication.daily_limit",
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/photos": {
+      "post": {
+        "operationId": "addPetPhotos",
+        "summary": "Agregar fotos",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photos": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Hasta 4 archivos image/*, 8388608 bytes cada uno"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perfil con las fotos nuevas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Una foto no es válida (photo.invalid) · Demasiadas fotos (photo.limit) · Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "photo.invalid",
+              "photo.limit",
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/photos/{photoId}": {
+      "delete": {
+        "operationId": "removePetPhoto",
+        "summary": "Quitar una foto",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "photoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil sin esa foto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Demasiadas fotos (photo.limit) · Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "photo.limit",
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/photos/order": {
+      "patch": {
+        "operationId": "reorderPetPhotos",
+        "summary": "Reordenar fotos; la primera es la portada",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photoIds": {
+                    "minItems": 1,
+                    "maxItems": 4,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "required": [
+                  "photoIds"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perfil con el orden nuevo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/public-preview": {
+      "get": {
+        "operationId": "getPetPublicPreview",
+        "summary": "Lo que vería quien encuentre a la mascota",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vista pública",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PetPublicView"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/scans": {
+      "get": {
+        "operationId": "listPetScans",
+        "summary": "Historial de escaneos del collar con sus avisos",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de escaneos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanHistory"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/scans/{scanId}/suspicious": {
+      "post": {
+        "operationId": "markScanSuspicious",
+        "summary": "Marcar un escaneo como sospechoso: el collar pasa a revisión",
+        "tags": [
+          "pets"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "scanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estado resultante",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuspiciousScanResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/transfers": {
+      "post": {
+        "operationId": "createPetTransfer",
+        "summary": "Crear enlace de transferencia de la mascota",
+        "tags": [
+          "guardians"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Transferencia pendiente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferLink"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "Ya hay una transferencia pendiente (transfer.pending_exists)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "transfer.pending_exists"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/pets/{id}/transfers/cancel": {
+      "post": {
+        "operationId": "cancelPetTransfer",
+        "summary": "Cancelar la transferencia pendiente de la mascota (el dueño)",
+        "tags": [
+          "guardians"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transferencia cancelada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "La transferencia no existe o ya se resolvió (transfer.invalid)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "transfer.invalid"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/scans/{token}": {
+      "get": {
+        "operationId": "getScanPreview",
+        "summary": "Estado de la sesión de escaneo y datos públicos de la mascota",
+        "tags": [
+          "scans"
+        ],
+        "security": [
+          {
+            "scanToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vista y mascota",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanPreview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Acerca tu teléfono al collar (scan.token_required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "scan.token_required"
+            ]
+          },
+          "403": {
+            "description": "La lectura del collar ya no es válida (scan.token_invalid)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "scan.token_invalid"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/scans/{token}/finder-report": {
+      "post": {
+        "operationId": "createFinderReport",
+        "summary": "Avisar al dueño: mensaje, ubicación aproximada, foto y teléfono opcionales",
+        "tags": [
+          "scans"
+        ],
+        "security": [
+          {
+            "scanToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "locationConsent": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "approxLat": {
+                    "type": "number",
+                    "minimum": -90,
+                    "maximum": 90
+                  },
+                  "approxLng": {
+                    "type": "number",
+                    "minimum": -180,
+                    "maximum": 180
+                  },
+                  "phone": {
+                    "type": "string",
+                    "pattern": "^\\d{10}$"
+                  },
+                  "photo": {
+                    "type": "array",
+                    "maxItems": 1,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Hasta 1 archivos image/*, 8388608 bytes cada uno"
+                  }
+                },
+                "required": [
+                  "locationConsent"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Aviso enviado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinderReportResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Una foto no es válida (photo.invalid) · Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "photo.invalid",
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Acerca tu teléfono al collar (scan.token_required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "scan.token_required"
+            ]
+          },
+          "403": {
+            "description": "El dueño silenció este collar por ahora (scan.muted) · La lectura del collar ya no es válida (scan.token_invalid) · Este collar está en revisión (tag.under_review)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "scan.muted",
+              "scan.token_invalid",
+              "tag.under_review"
+            ]
+          },
+          "409": {
+            "description": "Esta lectura no permite avisar (scan.not_reportable)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "scan.not_reportable"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited) · Ya avisaste hace poco; espera un momento (scan.cooldown) · Se alcanzó el límite de avisos de hoy (scan.daily_limit)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited",
+              "scan.cooldown",
+              "scan.daily_limit"
             ]
           },
           "500": {
@@ -241,10 +3147,988 @@
           }
         }
       }
+    },
+    "/api/v1/scans/qr": {
+      "post": {
+        "operationId": "resolveQrScan",
+        "summary": "Resuelve el código QR del collar y emite un token sin verificar",
+        "tags": [
+          "scans"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 20,
+                    "description": "Código público de la mascota impreso en el collar"
+                  }
+                },
+                "required": [
+                  "code"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vista resuelta y token de escaneo si aplica",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanResolution"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/tags/{id}/mute": {
+      "delete": {
+        "operationId": "unmuteTag",
+        "summary": "Quitar el silencio del collar",
+        "tags": [
+          "tags"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collar con avisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "Este collar no está vinculado (tag.not_linked)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "tag.not_linked"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      },
+      "post": {
+        "operationId": "muteTag",
+        "summary": "Silenciar el collar por unas horas",
+        "tags": [
+          "tags"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hours": {
+                    "default": 4,
+                    "description": "Horas de silencio (1 a 168)",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 168
+                  }
+                },
+                "required": [
+                  "hours"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Collar silenciado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "Este collar no está vinculado (tag.not_linked)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "tag.not_linked"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/tags/{id}/unlink": {
+      "post": {
+        "operationId": "unlinkTag",
+        "summary": "Desvincular el collar; vuelve a estar listo",
+        "tags": [
+          "tags"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collar listo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "Este collar no está vinculado (tag.not_linked)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "tag.not_linked"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/tags/activate": {
+      "post": {
+        "operationId": "activateTag",
+        "summary": "Vincular el collar recién escaneado a una mascota",
+        "tags": [
+          "tags"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scanToken": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Token de escaneo de la lectura que acaba de hacer el dueño"
+                  },
+                  "petId": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "scanToken",
+                  "petId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Collar activo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended) · Solo el dueño puede hacer eso (pet.not_owner) · La lectura del collar ya no es válida (scan.token_invalid)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended",
+              "pet.not_owner",
+              "scan.token_invalid"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "409": {
+            "description": "La mascota no está en el estado necesario (pet.invalid_state) · Este collar no se puede activar (tag.not_activatable)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "pet.invalid_state",
+              "tag.not_activatable"
+            ]
+          },
+          "415": {
+            "description": "Tipo de contenido no soportado (unsupported_media_type)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "unsupported_media_type"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/transfers/{code}/accept": {
+      "post": {
+        "operationId": "acceptPetTransfer",
+        "summary": "Aceptar una transferencia: el receptor pasa a ser dueño",
+        "tags": [
+          "guardians"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transferencia aceptada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "401": {
+            "description": "Se requiere iniciar sesión (auth.required)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.required"
+            ]
+          },
+          "403": {
+            "description": "Cuenta suspendida (auth.suspended)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "auth.suspended"
+            ]
+          },
+          "404": {
+            "description": "La transferencia no existe o ya se resolvió (transfer.invalid)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "transfer.invalid"
+            ]
+          },
+          "410": {
+            "description": "La transferencia caducó (transfer.expired)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "transfer.expired"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "FinderReportResult": {
+        "description": "Aviso enviado y canal de contacto disponible",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "petId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ENVIADO",
+              "VISTO",
+              "SOSPECHOSO"
+            ]
+          },
+          "trustLevel": {
+            "type": "string",
+            "enum": [
+              "NFC_VERIFICADO",
+              "QR_SIN_VERIFICAR"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+          },
+          "petStatus": {
+            "type": "string",
+            "enum": [
+              "EN_CASA",
+              "PERDIDA",
+              "INACTIVA"
+            ]
+          },
+          "ownerPhone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "petId",
+          "status",
+          "trustLevel",
+          "createdAt",
+          "petStatus",
+          "ownerPhone"
+        ],
+        "additionalProperties": false
+      },
+      "GuardianAcceptance": {
+        "type": "object",
+        "properties": {
+          "petId": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "DUENO",
+              "GUARDIAN"
+            ]
+          }
+        },
+        "required": [
+          "petId",
+          "role"
+        ],
+        "additionalProperties": false
+      },
+      "GuardianList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "DUENO",
+                    "GUARDIAN"
+                  ]
+                },
+                "since": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                }
+              },
+              "required": [
+                "userId",
+                "name",
+                "role",
+                "since"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "InviteLink": {
+        "description": "Invitación de guardián",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Enlace de un solo uso; el código va dentro"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+          }
+        },
+        "required": [
+          "url",
+          "expiresAt"
+        ],
+        "additionalProperties": false
+      },
+      "LostModeResult": {
+        "description": "Estado de la mascota y el caso enlazado tras activar o cerrar el modo perdido",
+        "type": "object",
+        "properties": {
+          "petId": {
+            "type": "string"
+          },
+          "petStatus": {
+            "type": "string",
+            "enum": [
+              "EN_CASA",
+              "PERDIDA",
+              "INACTIVA"
+            ]
+          },
+          "publicationId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "petId",
+          "petStatus",
+          "publicationId"
+        ],
+        "additionalProperties": false
+      },
       "Me": {
         "description": "Usuario en sesión, estado de onboarding y preferencias",
         "type": "object",
@@ -353,6 +4237,584 @@
         ],
         "additionalProperties": false
       },
+      "PetDetail": {
+        "description": "Perfil completo de una mascota para sus guardianes",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "species": {
+            "type": "string",
+            "enum": [
+              "PERRO",
+              "GATO",
+              "OTRO"
+            ]
+          },
+          "speciesDetail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "EN_CASA",
+              "PERDIDA",
+              "INACTIVA"
+            ]
+          },
+          "coverPhotoUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "DUENO",
+              "GUARDIAN"
+            ]
+          },
+          "tag": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "FABRICADO",
+                      "LISTO",
+                      "ACTIVO",
+                      "EN_REVISION",
+                      "REVOCADO"
+                    ]
+                  },
+                  "activatedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "mutedUntil": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "status",
+                  "activatedAt",
+                  "mutedUntil"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "activeCaseId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "MACHO",
+              "HEMBRA",
+              "DESCONOCIDO"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "birthDate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "AAAA-MM-DD"
+          },
+          "sterilized": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "microchipCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "medicalNotes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "showPhoneToFinder": {
+            "type": "boolean"
+          },
+          "showMedicalNotes": {
+            "type": "boolean"
+          },
+          "publicCode": {
+            "type": "string"
+          },
+          "lostSince": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "position": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "position",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "guardians": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "DUENO",
+                    "GUARDIAN"
+                  ]
+                },
+                "since": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                }
+              },
+              "required": [
+                "userId",
+                "name",
+                "role",
+                "since"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "species",
+          "speciesDetail",
+          "status",
+          "coverPhotoUrl",
+          "role",
+          "tag",
+          "activeCaseId",
+          "sex",
+          "description",
+          "birthDate",
+          "sterilized",
+          "microchipCode",
+          "medicalNotes",
+          "showPhoneToFinder",
+          "showMedicalNotes",
+          "publicCode",
+          "lostSince",
+          "photos",
+          "guardians",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "PetList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PetSummary"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "PetPhotos": {
+        "type": "object",
+        "properties": {
+          "photos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "position": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "position",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "photos"
+        ],
+        "additionalProperties": false
+      },
+      "PetPublicView": {
+        "description": "Lo que ve quien encuentra a la mascota; nunca datos del dueño",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "species": {
+            "type": "string",
+            "enum": [
+              "PERRO",
+              "GATO",
+              "OTRO"
+            ]
+          },
+          "speciesDetail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "MACHO",
+              "HEMBRA",
+              "DESCONOCIDO"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "EN_CASA",
+              "PERDIDA",
+              "INACTIVA"
+            ]
+          },
+          "lostSince": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "statusMessage": {
+            "type": "string"
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "medicalNotes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "species",
+          "speciesDetail",
+          "sex",
+          "status",
+          "lostSince",
+          "statusMessage",
+          "photos",
+          "phone",
+          "medicalNotes"
+        ],
+        "additionalProperties": false
+      },
+      "PetSummary": {
+        "description": "Mascota en la lista de un guardián",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "species": {
+            "type": "string",
+            "enum": [
+              "PERRO",
+              "GATO",
+              "OTRO"
+            ]
+          },
+          "speciesDetail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "EN_CASA",
+              "PERDIDA",
+              "INACTIVA"
+            ]
+          },
+          "coverPhotoUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "DUENO",
+              "GUARDIAN"
+            ]
+          },
+          "tag": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "FABRICADO",
+                      "LISTO",
+                      "ACTIVO",
+                      "EN_REVISION",
+                      "REVOCADO"
+                    ]
+                  },
+                  "activatedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "mutedUntil": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "status",
+                  "activatedAt",
+                  "mutedUntil"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "activeCaseId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "species",
+          "speciesDetail",
+          "status",
+          "coverPhotoUrl",
+          "role",
+          "tag",
+          "activeCaseId"
+        ],
+        "additionalProperties": false
+      },
       "Problem": {
         "description": "Error en formato Problem Details (RFC 9457)",
         "type": "object",
@@ -410,7 +4872,7 @@
         "additionalProperties": false
       },
       "RemoteConfig": {
-        "description": "Configuración que la app consulta al arrancar: versión mínima, proveedores, municipios y límites de producto.",
+        "description": "Configuración que la app consulta al arrancar: versión mínima, proveedores, límites de producto y geografía.",
         "type": "object",
         "properties": {
           "apiVersion": {
@@ -440,29 +4902,6 @@
               ]
             },
             "description": "Proveedores de login habilitados, en el orden del diseño"
-          },
-          "activeMunicipios": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "estado": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "id",
-                "name",
-                "estado"
-              ],
-              "additionalProperties": false
-            }
           },
           "limits": {
             "type": "object",
@@ -577,19 +5016,32 @@
           "map": {
             "type": "object",
             "properties": {
-              "cityCenter": {
+              "nationalView": {
                 "type": "object",
                 "properties": {
-                  "lat": {
-                    "type": "number"
+                  "center": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number"
+                      },
+                      "lng": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "lat",
+                      "lng"
+                    ],
+                    "additionalProperties": false
                   },
-                  "lng": {
+                  "zoom": {
                     "type": "number"
                   }
                 },
                 "required": [
-                  "lat",
-                  "lng"
+                  "center",
+                  "zoom"
                 ],
                 "additionalProperties": false
               },
@@ -625,7 +5077,7 @@
               }
             },
             "required": [
-              "cityCenter",
+              "nationalView",
               "cityZoom",
               "caseZoom",
               "coordinateBounds"
@@ -637,9 +5089,250 @@
           "apiVersion",
           "minSupportedAppVersion",
           "oauthProviders",
-          "activeMunicipios",
           "limits",
           "map"
+        ],
+        "additionalProperties": false
+      },
+      "ScanHistory": {
+        "description": "Escaneos de una mascota, del más reciente al más antiguo",
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                },
+                "trustLevel": {
+                  "type": "string",
+                  "enum": [
+                    "NFC_VERIFICADO",
+                    "QR_SIN_VERIFICAR"
+                  ]
+                },
+                "result": {
+                  "type": "string",
+                  "enum": [
+                    "VALIDO",
+                    "FIRMA_INVALIDA",
+                    "REPLAY",
+                    "TAG_DESCONOCIDO",
+                    "TAG_INACTIVO",
+                    "FORMATO_INVALIDO"
+                  ]
+                },
+                "view": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "GUARDIAN",
+                        "FINDER",
+                        "ACTIVATION",
+                        "NEUTRAL"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "approxLat": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "approxLng": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "finderReport": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "ENVIADO",
+                            "VISTO",
+                            "SOSPECHOSO"
+                          ]
+                        },
+                        "message": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "photoUrl": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "contactPhone": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "message",
+                        "photoUrl",
+                        "contactPhone",
+                        "createdAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "createdAt",
+                "trustLevel",
+                "result",
+                "view",
+                "approxLat",
+                "approxLng",
+                "finderReport"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "ScanPreview": {
+        "description": "Estado de la sesión de escaneo y lo público de la mascota",
+        "type": "object",
+        "properties": {
+          "view": {
+            "type": "string",
+            "enum": [
+              "GUARDIAN",
+              "FINDER",
+              "ACTIVATION",
+              "NEUTRAL"
+            ]
+          },
+          "trustLevel": {
+            "type": "string",
+            "enum": [
+              "NFC_VERIFICADO",
+              "QR_SIN_VERIFICAR"
+            ]
+          },
+          "tagStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "FABRICADO",
+                  "LISTO",
+                  "ACTIVO",
+                  "EN_REVISION",
+                  "REVOCADO"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+          },
+          "petId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pet": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PetPublicView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "view",
+          "trustLevel",
+          "tagStatus",
+          "expiresAt",
+          "petId",
+          "pet"
         ],
         "additionalProperties": false
       },
@@ -704,6 +5397,164 @@
           "tagStatus",
           "scanToken",
           "expiresAt"
+        ],
+        "additionalProperties": false
+      },
+      "SuspiciousScanResult": {
+        "description": "Estado del collar y del aviso tras marcar sospecha",
+        "type": "object",
+        "properties": {
+          "scanId": {
+            "type": "string"
+          },
+          "tagStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "FABRICADO",
+                  "LISTO",
+                  "ACTIVO",
+                  "EN_REVISION",
+                  "REVOCADO"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "finderReportStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ENVIADO",
+                  "VISTO",
+                  "SOSPECHOSO"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "scanId",
+          "tagStatus",
+          "finderReportStatus"
+        ],
+        "additionalProperties": false
+      },
+      "TagSummary": {
+        "description": "Estado del collar para sus guardianes",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "FABRICADO",
+              "LISTO",
+              "ACTIVO",
+              "EN_REVISION",
+              "REVOCADO"
+            ]
+          },
+          "petId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "activatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mutedUntil": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "petId",
+          "activatedAt",
+          "mutedUntil"
+        ],
+        "additionalProperties": false
+      },
+      "TransferLink": {
+        "description": "Transferencia de mascota pendiente",
+        "type": "object",
+        "properties": {
+          "transferId": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+          }
+        },
+        "required": [
+          "transferId",
+          "url",
+          "expiresAt"
+        ],
+        "additionalProperties": false
+      },
+      "TransferResult": {
+        "type": "object",
+        "properties": {
+          "transferId": {
+            "type": "string"
+          },
+          "petId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDIENTE",
+              "ACEPTADA",
+              "RECHAZADA",
+              "EXPIRADA",
+              "RESUELTA_ADMIN"
+            ]
+          }
+        },
+        "required": [
+          "transferId",
+          "petId",
+          "status"
         ],
         "additionalProperties": false
       }

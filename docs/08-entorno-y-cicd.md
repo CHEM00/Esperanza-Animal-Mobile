@@ -5,6 +5,7 @@
 | Elemento | Situación actual | Requisito |
 |---|---|---|
 | Equipo de desarrollo | Windows 11 Pro, Node 24, Git 2.51 | Suficiente para backend, web y Android |
+| PostgreSQL | 16 (Docker en local, Coolify en producción) | Extensión `unaccent` (contrib) disponible: la migración `unaccent_extension` de S18 la crea como extensión de confianza; si el proveedor no lo permite, crearla una vez a mano como superusuario |
 | JDK | Por instalar | JDK 17 LTS, exigido por el plugin de Android Gradle |
 | Android Studio | Por instalar | Versión estable; incluye SDK, emulador y herramientas de plataforma |
 | Emulador Android | — | Requiere Hyper-V o Windows Hypervisor Platform activados en Windows 11 Pro |

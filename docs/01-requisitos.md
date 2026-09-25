@@ -253,6 +253,11 @@ y la app los recibe por el contrato o por configuración remota, sin duplicarlos
 | `ALERT_RADIUS_OPTIONS_KM` | 1, 3, 5, 10 | nuevo | `features/alerts/constants.ts` |
 | `DEFAULT_ALERT_RADIUS_KM` | 3 | nuevo | ídem |
 | `ALERT_ZONE_DECIMALS` | 3 (unos 110 m) | nuevo | ídem |
+| `CITY_SEARCH_LIMIT` | 20 | nuevo (S18) | `features/cities/constants.ts` |
+| `CITY_SEARCH_MIN_LENGTH` | 2 | nuevo (S18) | ídem |
+| `NEAREST_CITY_MAX_KM` | 60 | nuevo (S18) | ídem |
+| `CITY_COOKIE_MAX_AGE_SECONDS` | 1 año | nuevo (S18) | `features/cities/cookie.ts` |
+| `NEARBY_CANDIDATES` | 200 | nuevo (S18) | `features/feed/queries.ts` |
 | `REPLAY_SUSPICION_THRESHOLD` | 3 intentos | nuevo | ídem |
 | `APPROX_LOCATION_DECIMALS` | 3 (unos 110 m) | nuevo | ídem |
 | `FINDER_MESSAGE_MAX_LENGTH` | 300 | nuevo | ídem |

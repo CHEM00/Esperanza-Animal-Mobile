@@ -528,35 +528,56 @@ sesión, registrar mascota, activar collar, recibir un aviso de hallazgo.
 ## S18 · Backend y web: apertura nacional
 
 **Repositorio:** `esperanza-animal`. **Cubre:** RF-O1 a RF-O5 (documento 01 §2.O).
-Decidida el 2026-09-24: el collar se venderá en todo México. El flujo de mascotas no
-depende de la colonia y ya es nacional; lo que está acotado al corredor es la comunidad
-(feed, mapa, validación de coordenadas y marca).
+**Estado:** implementada y probada en vivo el 2026-09-25 (commit en `main`).
 
-- [ ] Migración `municipios_nacionales`: `active = true` en todo el catálogo; el flag queda
-      como interruptor de apagado por municipio, no como puerta de entrada (RF-O1).
-- [ ] ETL `scripts/inegi-a-centroides.mjs` desde el Marco Geoestadístico del INEGI:
-      centroide por municipio (`Municipio.lat`/`lng`), sembrado junto con el catálogo
-      (RF-O2).
-- [ ] `COORDINATE_BOUNDS` pasa a la caja de México (sanidad, no geocerca); `CITY_CENTER`
-      desaparece: el centro del mapa y del pin de captura es la zona de alertas del perfil
-      o el centroide de su municipio; el visitante elige ciudad o usa GPS (RF-O3).
-- [ ] Feed: «Recientes» acotado al municipio del perfil (visitante: municipio elegido,
-      recordado en cookie); «Cerca de ti» por radio desde la zona de alertas con
-      `lib/geo.ts` y el índice de coordenadas de publicaciones; selector de ciudad en el
-      encabezado. La API del feed (S7) nace ya con este contrato (RF-O4).
-- [ ] Marca: `REGION_NAME` → «México» en encabezado, aviso de privacidad, héroe de
-      encontrados y ficha de Play; el README deja de decir Coatzacoalcos (RF-O5).
-- [ ] `GET /api/v1/config` deja de enviar la lista de municipios activos (serían 2,478
-      filas) y la app busca por CP como la web; `ColoniaPicker` sin el mensaje de municipio
-      inactivo.
-- [ ] Administración: filtro por estado y municipio en reportes y publicaciones, y botón de
-      apagado por municipio con motivo y bitácora.
-- [ ] Pruebas: scoping del feed, radio, centroides, bounds; aceptación con un caso en otro
-      estado.
+- [x] Migración `municipios_nacionales`: `active = true` en todo el catálogo y como valor
+      por defecto; columnas `Municipio.lat/lng`; índice `(lat, lng)` en publicaciones;
+      valores `DESACTIVAR_MUNICIPIO` y `REACTIVAR_MUNICIPIO` de la bitácora. Migración
+      `unaccent_extension` (`CREATE EXTENSION IF NOT EXISTS unaccent`).
+- [x] `scripts/inegi-a-centroides.mjs`: cabecera municipal por municipio desde el
+      **servicio web** del Catálogo Único del INEGI (2,478 de 2,478, sin shapefiles) en
+      `prisma/data/municipios-centroides.psv.gz`; `seed-catalogo.mjs` los aplica con un
+      `UPDATE … FROM unnest()` que solo rellena municipios sin punto.
+- [x] `features/map/constants.ts`: `COORDINATE_BOUNDS` = caja de México, `NATIONAL_VIEW`;
+      `CITY_CENTER` eliminado. `LocationPicker` recibe `focus` y `MapCanvas` un
+      `captureZoom`; el onboarding recentra el mapa al teclear el CP
+      (`ColoniaPicker.onMunicipioLocated`), publicar arranca en la zona de alertas y
+      «Lo vi» en el punto de pérdida.
+- [x] `features/cities`: cookie `ea-ciudad` (un año, solo id de municipio), página
+      `/ciudad` (búsqueda sin acentos con `unaccent`, GPS → municipio más cercano dentro
+      de `NEAREST_CITY_MAX_KM`, «Mi ciudad», «Ver todo México»), acciones y pruebas.
+- [x] `features/feed/scope.ts` (`resolveFeedScope`: elección > perfil > nada) y
+      `map-focus.ts`; «Recientes» y «Encontrados» acotados al municipio; «Cerca de ti»
+      por radio (caja envolvente + Haversine, tarjeta con distancia; perfiles sin zona
+      siguen por colonia); pins del mapa acotados; chip de ciudad en el encabezado y en
+      el mapa.
+- [x] Marca: `REGION_NAME` = «México»; tagline y aviso de privacidad nacionales.
+- [x] `GET /api/v1/config`: sin `activeMunicipios`; `map.nationalView` en vez de
+      `cityCenter`. Contrato y cliente móvil regenerados.
+- [x] Administración: `/admin/municipios` (pausar y reactivar con motivo y bitácora;
+      lista de pausados y búsqueda sin acentos) y búsqueda por municipio en
+      publicaciones.
+- [x] Pruebas: 213 en verde (cookie, rutas de retorno, foco del mapa, radio, caja de
+      México, escape de LIKE); `typecheck`, `lint` y `next build` limpios.
 
-**Aceptación:** una persona con CP de Monterrey completa el onboarding, publica un caso con
-pin en su ciudad y lo ve en «Recientes» y en el mapa centrado en Monterrey; una persona de
-Coatzacoalcos no lo ve en su feed; la web y la API aplican las mismas reglas.
+**Prueba en vivo realizada** (2026-09-25, 21 comprobaciones): persona de Monterrey con
+zona de alertas y un caso publicado; el feed nacional lo muestra; con cookie de Monterrey
+lo muestra y con cookie de Coatzacoalcos no; una cookie corrupta se ignora; mapa centrado
+en la cabecera de Monterrey y vista nacional sin ciudad; `/ciudad?q=merida` encuentra
+Mérida; con sesión el feed usa el municipio del perfil, «Cerca de ti» muestra el caso «a
+menos de 1 km», la ciudad elegida manda sobre la del perfil y `/publicar` arranca en la
+zona de alertas; municipio en pausa: lo publicado sigue visible y sus CP dejan de ser
+seleccionables; `/api/v1/config` expone `nationalView`.
+
+Desviaciones respecto al diseño, ya reflejadas en los documentos: el punto por municipio
+es la **cabecera municipal** (INEGI), no el centroide geométrico, porque centra el mapa en
+la mancha urbana; la ciudad elegida por cookie manda sobre la del perfil (explorar otra
+ciudad sin tocar el perfil); la pausa no borra nada, solo bloquea CP nuevos. Deuda
+consciente: el filtro por municipio del feed va por join `colonia.municipioId` (sin
+desnormalizar) y el mapa nacional sin ciudad trae todos los pins; ambas se revisan en S7
+con la consulta por área visible.
+
+**Aceptación:** cumplida (ver prueba en vivo).
 
 ---
 
