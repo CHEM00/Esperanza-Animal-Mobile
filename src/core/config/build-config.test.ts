@@ -14,7 +14,7 @@ describe("readBuildConfig", () => {
       iosBundleId: APP_IDENTITY.iosBundleId,
       scheme: APP_IDENTITY.scheme,
       linkDomain: APP_IDENTITY.linkDomain,
-      easProjectId: null,
+      easProjectId: APP_IDENTITY.easProjectId,
       googleIosUrlScheme: null,
     });
   });
@@ -26,7 +26,7 @@ describe("readBuildConfig", () => {
       APP_IOS_BUNDLE_ID: "mx.com.sysosa.rescate.dev",
       APP_SCHEME: "alakito-dev",
       APP_LINK_DOMAIN: "pruebas.alakito.mx",
-      EAS_PROJECT_ID: " 11111111-2222-3333-4444-555555555555 ",
+      GOOGLE_IOS_URL_SCHEME: " com.googleusercontent.apps.123 ",
     });
 
     expect(build).toMatchObject({
@@ -35,9 +35,10 @@ describe("readBuildConfig", () => {
       iosBundleId: "mx.com.sysosa.rescate.dev",
       scheme: "alakito-dev",
       linkDomain: "pruebas.alakito.mx",
-      easProjectId: "11111111-2222-3333-4444-555555555555",
+      googleIosUrlScheme: "com.googleusercontent.apps.123",
     });
     expect(build.name).toBe(APP_IDENTITY.name);
+    expect(build.easProjectId).toBe(APP_IDENTITY.easProjectId);
   });
 
   it("rechaza una sobrescritura mal formada en lugar de aceptarla a ciegas", () => {

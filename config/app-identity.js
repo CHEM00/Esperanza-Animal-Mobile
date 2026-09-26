@@ -19,6 +19,8 @@
  * @property {string} iosBundleId   Bundle id de iOS; coincide con IOS_BUNDLE_ID del backend.
  * @property {string} scheme        Esquema propio para el retorno de OAuth, sin `://`.
  * @property {string} linkDomain    Dominio de enlaces universales y App Links, sin https://.
+ * @property {string} easProjectId  Id del proyecto en EAS (`@sysosa/alakito`); público, lo
+ *                                  imprime `eas init`. En entorno no sirve: EAS no carga .env.
  */
 
 /** @type {Readonly<AppIdentity>} */
@@ -30,6 +32,7 @@ const APP_IDENTITY = Object.freeze({
   iosBundleId: "mx.com.sysosa.rescate",
   scheme: "alakito",
   linkDomain: "alakito.mx",
+  easProjectId: "79be4bbb-3691-4f0d-9238-bd88030af368",
 });
 
 module.exports = { APP_IDENTITY };

@@ -465,8 +465,9 @@ cuentas y dispositivos (abajo).
       token portador, salir.
 - [x] CI en GitHub Actions: lint, typecheck, pruebas, `api:check`, `tokens:check`,
       evaluación de la configuración de Expo.
-- [ ] **Pendiente de cuentas y dispositivos:** cuenta de Expo (`eas init` y
-      `EAS_PROJECT_ID`), client IDs de Google de tipo Android e iOS, cuenta de Apple para
+- [x] Proyecto EAS `@sysosa/alakito` creado el 2026-09-25 (`eas init`); el id vive en
+      `config/app-identity.js` porque EAS no carga `.env` al evaluar la configuración.
+- [ ] **Pendiente de cuentas y dispositivos:** client IDs de Google de tipo Android e iOS, cuenta de Apple para
       Sign in with Apple, y la primera build de desarrollo instalada en un Android y en
       el iPhone. Sin SDK de Android en la máquina, la build local no es posible.
 

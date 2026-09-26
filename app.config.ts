@@ -88,6 +88,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     environment: build.environment,
     linkDomain: build.linkDomain,
     scheme: build.scheme,
-    ...(build.easProjectId ? { eas: { projectId: build.easProjectId } } : {}),
+    eas: { projectId: build.easProjectId },
   },
 });

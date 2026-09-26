@@ -21,7 +21,7 @@ const { APP_IDENTITY } = require("./app-identity");
  * @property {string} iosBundleId
  * @property {string} scheme
  * @property {string} linkDomain
- * @property {string | null} easProjectId
+ * @property {string} easProjectId
  * @property {string | null} googleIosUrlScheme
  */
 
@@ -81,7 +81,7 @@ function readBuildConfig(source = process.env) {
     iosBundleId: identity(source, "APP_IOS_BUNDLE_ID", REVERSE_DNS, "bundle id de iOS en notación inversa", APP_IDENTITY.iosBundleId),
     scheme: identity(source, "APP_SCHEME", SCHEME, "esquema de URL sin ://", APP_IDENTITY.scheme),
     linkDomain: identity(source, "APP_LINK_DOMAIN", DOMAIN, "dominio sin https://", APP_IDENTITY.linkDomain),
-    easProjectId: optional(source, "EAS_PROJECT_ID"),
+    easProjectId: APP_IDENTITY.easProjectId,
     googleIosUrlScheme: optional(source, "GOOGLE_IOS_URL_SCHEME"),
   };
 }
