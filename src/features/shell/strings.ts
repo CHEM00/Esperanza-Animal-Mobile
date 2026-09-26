@@ -18,6 +18,11 @@ export const SHELL_STRINGS = {
     title: "Muy pronto",
     body: "Esta pantalla llega en las próximas secciones del plan.",
   },
+  profile: {
+    pets: "Mis mascotas",
+    scanCollar: "Escanear un collar",
+    signOut: "Cerrar sesión",
+  },
   loading: "Cargando…",
   offline: {
     title: "Sin conexión",

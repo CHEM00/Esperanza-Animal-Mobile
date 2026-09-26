@@ -266,6 +266,11 @@ y la app los recibe por el contrato o por configuración remota, sin duplicarlos
 | `FINDER_MESSAGE_MAX_LENGTH` | 300 | nuevo | ídem |
 | `SCAN_LOG_RETENTION_MONTHS` | 12 | nuevo | ídem |
 | `TAG_MUTE_DEFAULT_HOURS` | 4 | nuevo | `features/tags/constants.ts` |
+| `TAG_MUTE_MAX_HOURS` | 168 (7 días) | nuevo | ídem |
+| `TAG_MUTE_HOUR_OPTIONS` | 4, 12, 24, 72, 168 h | nuevo (S13, app) | `features/collar/constants.ts` (app); el tope y el valor por defecto llegan por configuración remota |
+| `APPROX_ZONE_RADIUS_METERS` | 110 m | nuevo (S13, app) | ídem |
+| `SCAN_HISTORY_PAGE_SIZE` | 30 | nuevo | `features/finder/constants.ts` (web) y `features/collar/constants.ts` (app) |
+| `PET_MAX_AGE_YEARS` | 30 años | nuevo (S13, app) | `features/pets/constants.ts` (app): límite inferior del selector de nacimiento |
 | `NFC_KEY_VERSION_FACTORY` | 0 | nuevo | ídem |
 | `PET_PUBLIC_CODE_LENGTH` | 10 caracteres base32 | nuevo | `features/pets/constants.ts` |
 | `MAX_PETS_PER_USER` | 10 | nuevo | ídem |

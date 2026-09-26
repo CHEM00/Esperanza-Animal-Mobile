@@ -45,12 +45,38 @@ export const APP_ROUTES = {
   profile: "/perfil",
   login: "/login",
   updateRequired: "/actualizar",
+  /** M1 · Mis mascotas. */
+  pets: "/mascotas",
+  /** M3 · Crear mascota. */
+  petNew: "/mascotas/nueva",
+  /** M2 · Perfil de mascota. */
+  pet: (id: string) => `/mascotas/${encodeURIComponent(id)}`,
+  /** M3 · Editar mascota. */
+  petEdit: (id: string) => `/mascotas/${encodeURIComponent(id)}/editar`,
+  /** M7 · Historial de escaneos y controles del collar. */
+  petScans: (id: string) => `/mascotas/${encodeURIComponent(id)}/escaneos`,
+  /** M8 · Guardianes. */
+  petGuardians: (id: string) => `/mascotas/${encodeURIComponent(id)}/guardianes`,
+  /** M4 · Activar collar; con `petId` se salta la elección de mascota. */
+  collarActivate: (petId?: string) =>
+    petId ? `/collar/activar?petId=${encodeURIComponent(petId)}` : "/collar/activar",
+  /** M4 desde un enlace universal: la lectura ya verificada viaja en la ruta. */
+  collarActivateWithScan: (scanToken: string, expiresAt: string) =>
+    `/collar/activar?token=${encodeURIComponent(scanToken)}&expiresAt=${encodeURIComponent(expiresAt)}`,
+  /** M5 · Escanear collar en primer plano. */
+  collarScan: "/collar/escanear",
+  /** Resolución de una URL de collar (enlace universal o lectura NFC). */
   scanResolve: "/collar/resolver",
   finder: (token: string) => `/encontre/${encodeURIComponent(token)}`,
   publication: (id: string) => `/publicacion/${encodeURIComponent(id)}`,
   guardianInvite: (code: string) => `/invitacion/${encodeURIComponent(code)}`,
   petTransfer: (code: string) => `/transferencia/${encodeURIComponent(code)}`,
 } as const;
+
+/** Ruta de resolución para una URL de collar leída por NFC o QR dentro de la app. */
+export function scanResolveHref(scanUrl: string): string {
+  return `${APP_ROUTES.scanResolve}?url=${encodeURIComponent(scanUrl)}`;
+}
 
 function parseIncoming(url: string, domains: LinkDomains): URL | null {
   let parsed: URL;

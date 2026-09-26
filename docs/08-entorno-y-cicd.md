@@ -103,5 +103,5 @@ primera lectura de chips (documento 10), con `NFC_ALLOW_FACTORY_KEYS=true`.
 | `GOOGLE_IOS_URL_SCHEME` | build | Esquema inverso del client ID de iOS de Google |
 | `APP_ANDROID_PACKAGE`, `APP_IOS_BUNDLE_ID`, `APP_SCHEME`, `APP_LINK_DOMAIN` | solo variantes | Sobrescriben la identidad publicada de `config/app-identity.js`; en el uso normal no se definen |
 | `EXPO_PUBLIC_MAPS_PROVIDER` | por perfil | `native` o `maplibre` |
-| Llave de Google Maps para Android | secreto EAS | Inyectada en el manifiesto por config plugin |
+| `GOOGLE_MAPS_ANDROID_API_KEY` | secreto EAS (build) | Maps SDK for Android; `app.config.ts` la inyecta en el manifiesto. iOS usa Apple Maps sin llave |
 | `WEB_REPO_PATH` | solo local | Ruta al repo web para `sync-tokens` |

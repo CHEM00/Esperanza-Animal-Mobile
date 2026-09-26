@@ -10,6 +10,9 @@
       "name": "account"
     },
     {
+      "name": "colonias"
+    },
+    {
       "name": "config"
     },
     {
@@ -29,6 +32,77 @@
     }
   ],
   "paths": {
+    "/api/v1/colonias": {
+      "get": {
+        "operationId": "searchColonias",
+        "summary": "Colonias de un código postal (catálogo SEPOMEX)",
+        "tags": [
+          "colonias"
+        ],
+        "parameters": [
+          {
+            "name": "cp",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{5}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Colonias del CP; municipio pausado o CP desconocido se explican",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CpSearchResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
     "/api/v1/config": {
       "get": {
         "operationId": "getRemoteConfig",
@@ -46,6 +120,90 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
+    "/api/v1/guardian-invites/{code}": {
+      "get": {
+        "operationId": "getGuardianInvitePreview",
+        "summary": "Qué mascota y si la invitación sigue vigente, antes de aceptarla",
+        "tags": [
+          "guardians"
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vista previa del enlace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkPreview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
           },
           "429": {
             "description": "Demasiadas peticiones (rate_limited)",
@@ -4450,6 +4608,90 @@
         }
       }
     },
+    "/api/v1/transfers/{code}": {
+      "get": {
+        "operationId": "getPetTransferPreview",
+        "summary": "Qué mascota y si la transferencia sigue vigente, antes de aceptarla",
+        "tags": [
+          "guardians"
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vista previa del enlace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkPreview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (validation.failed)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "validation.failed"
+            ]
+          },
+          "404": {
+            "description": "No encontrado (not_found)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "not_found"
+            ]
+          },
+          "429": {
+            "description": "Demasiadas peticiones (rate_limited)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "rate_limited"
+            ]
+          },
+          "500": {
+            "description": "Error interno (internal_error)",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "x-problem-codes": [
+              "internal_error"
+            ]
+          }
+        }
+      }
+    },
     "/api/v1/transfers/{code}/accept": {
       "post": {
         "operationId": "acceptPetTransfer",
@@ -4634,6 +4876,124 @@
         ],
         "additionalProperties": false
       },
+      "CpSearchResult": {
+        "description": "Colonias de un código postal; municipio pausado o CP desconocido se explican",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "const": "not_found"
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "const": "inactive"
+              },
+              "municipio": {
+                "type": "string"
+              },
+              "estado": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "status",
+              "municipio",
+              "estado"
+            ],
+            "additionalProperties": false,
+            "description": "El municipio existe pero administración lo pausó (interruptor S18)"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "const": "ok"
+              },
+              "municipio": {
+                "type": "string"
+              },
+              "estado": {
+                "type": "string"
+              },
+              "municipioCenter": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number"
+                      },
+                      "lng": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "lat",
+                      "lng"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Cabecera municipal (INEGI): centra el mapa de la zona"
+              },
+              "colonias": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Tipo de asentamiento SEPOMEX; se muestra cuando no es «Colonia»"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "status",
+              "municipio",
+              "estado",
+              "municipioCenter",
+              "colonias"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
       "FinderReportResult": {
         "description": "Aviso enviado y canal de contacto disponible",
         "type": "object",
@@ -4773,6 +5133,28 @@
         "required": [
           "url",
           "expiresAt"
+        ],
+        "additionalProperties": false
+      },
+      "LinkPreview": {
+        "description": "Qué mascota y si el enlace sigue vigente, antes de aceptarlo; nada del dueño",
+        "type": "object",
+        "properties": {
+          "petName": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "valida",
+              "usada",
+              "vencida"
+            ]
+          }
+        },
+        "required": [
+          "petName",
+          "state"
         ],
         "additionalProperties": false
       },
@@ -5802,6 +6184,51 @@
                 "type": "number",
                 "minimum": 0,
                 "maximum": 1
+              },
+              "nameMinLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "medicalNotesMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "microchipCodeMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "maxPetsPerUser": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "maxGuardiansPerPet": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "finderMessageMaxLength": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "tagMuteDefaultHours": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "tagMuteMaxHours": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "scanTokenTtlMinutes": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
               }
             },
             "required": [
@@ -5821,7 +6248,16 @@
               "sightingNoteMaxLength",
               "reportNoteMaxLength",
               "clientImageMaxDimension",
-              "clientImageQuality"
+              "clientImageQuality",
+              "nameMinLength",
+              "medicalNotesMaxLength",
+              "microchipCodeMaxLength",
+              "maxPetsPerUser",
+              "maxGuardiansPerPet",
+              "finderMessageMaxLength",
+              "tagMuteDefaultHours",
+              "tagMuteMaxHours",
+              "scanTokenTtlMinutes"
             ],
             "additionalProperties": false
           },

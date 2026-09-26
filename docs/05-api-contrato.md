@@ -57,6 +57,7 @@ Códigos de problema (extracto): `auth.required`, `auth.suspended`, `validation.
 | `GET /api/v1/me` | S | Usuario, rol, estado de onboarding, resumen de perfil | S1 |
 | `PUT /api/v1/me/profile` | S | Colonia, especies, aviso de privacidad, alertas de colonia | S7 |
 | `PUT /api/v1/me/contact` | S | Teléfonos y contacto de emergencia (cifrados) | S5 |
+| `GET /api/v1/colonias?cp=` | P | Colonias de un código postal (SEPOMEX): `ok`, `inactive` o `not_found` | S13 (adelantada de S7) |
 | `DELETE /api/v1/me` | S | Eliminar cuenta con palabra de confirmación | S7 |
 | `GET /api/v1/colonias?cp=` | P | Búsqueda por código postal | S7 |
 
@@ -111,6 +112,7 @@ Códigos de problema (extracto): `auth.required`, `auth.suspended`, `validation.
 | `POST /api/v1/pets/{id}/transfers` | S dueño | Enlace de transferencia | S3 |
 | `POST /api/v1/transfers/{code}/accept` | S | Aceptar: el receptor pasa a dueño y el anterior queda como guardián | S3 |
 | `POST /api/v1/pets/{id}/transfers/cancel` | S dueño | Cancelar la transferencia pendiente de la mascota | S3 |
+| `GET /api/v1/guardian-invites/{code}`, `GET /api/v1/transfers/{code}` | P | Vista previa del enlace: nombre de la mascota y estado (`valida`, `usada`, `vencida`); 404 si no existe | S13 |
 
 ### Collar y escaneo
 
@@ -154,7 +156,7 @@ y que el generador convierte en componentes OpenAPI.
 
 | Esquema | Contenido |
 |---|---|
-| `configSchema` | `minSupportedAppVersion`, `oauthProviders[]`, `activeMunicipios[]`, `limits { maxPhotos, maxPhotoBytes, ... }`, `mapDefaults` |
+| `configSchema` | `minSupportedAppVersion`, `oauthProviders[]`, `limits { maxPhotos, maxPhotoBytes, nameMinLength, medicalNotesMaxLength, microchipCodeMaxLength, maxPetsPerUser, maxGuardiansPerPet, finderMessageMaxLength, tagMuteDefaultHours, tagMuteMaxHours, scanTokenTtlMinutes, ... }`, `map { nationalView, cityZoom, caseZoom, coordinateBounds }`. La app arma formularios y controles con esto: no copia números del backend |
 | `meSchema` | `user { id, name, image, role }`, `onboardingComplete`, `profile { coloniaId, colonia, species[], notifyColonia }`, `petCount` |
 | `publicationSummarySchema` | Tarjeta del feed: id, nombre, especie, estado, colonia, portada, tiempo, avistamientos, `hasNfcTag` |
 | `publicationDetailSchema` | Detalle sin teléfono; `phoneMasked`; avistamientos visibles; `petId?` |

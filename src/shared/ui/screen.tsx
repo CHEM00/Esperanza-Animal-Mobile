@@ -2,10 +2,9 @@ import type { ReactNode } from "react";
 import { StyleSheet, View, type ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/core/theme/use-theme";
+import { CONTENT_MAX_WIDTH, HORIZONTAL_PADDING } from "./layout";
 
-/** Lienzo de pantalla: fondo del tema, área segura y el ancho de lectura de la web (390). */
-const CONTENT_MAX_WIDTH = 390;
-const HORIZONTAL_PADDING = 18;
+/** Lienzo de pantalla: fondo del tema, área segura y el ancho de lectura de la web. */
 
 interface ScreenProps {
   children: ReactNode;

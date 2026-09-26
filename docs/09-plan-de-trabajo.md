@@ -513,23 +513,58 @@ fotos y datos; los límites del servidor se reflejan en la app antes de enviar.
 
 ## S13 · Móvil: mascotas y collar
 
-**Repositorio:** este. **Cubre:** RF-C1 a RF-C8, RF-D1 a RF-D4, RF-E3, RF-E5, RF-F1, RF-F2,
-RF-F6 a RF-F9.
+**Repositorio:** este (más tres rutas y límites en el backend). **Cubre:** RF-C1 a RF-C8,
+RF-D1 a RF-D4, RF-E3, RF-E5, RF-F1, RF-F2, RF-F6 a RF-F9.
+**Estado:** código implementado y verificado en local el 2026-09-25 (typecheck, lint,
+107 pruebas con Jest, incluida una de componente de M4, y evaluación de `app.config.ts`
+sin `.env`, como hace EAS). Pendiente lo que exige dispositivos y cuentas (abajo).
 
-- [ ] M1, M2, M3 con fotos y preferencias de visibilidad.
-- [ ] M10 modo perdido reutilizando los avisos 3d y 3e.
-- [ ] M8 guardianes, M9 invitaciones y transferencias por enlace.
-- [ ] Resolución de escaneo por enlace universal: estrategias `GUARDIAN`, `FINDER`,
-      `ACTIVATION`, `NEUTRAL`; M6 vista de finder en la app.
-- [ ] M4 activación con máquina de estados; M5 lectura en primer plano y respaldo por QR
-      con cámara.
-- [ ] M7 historial con mapa, marcar sospechoso; silenciar y desvincular.
-- [ ] Flujos Maestro con URL de escaneo simulada (deep link) para activación y hallazgo.
+- [x] M1, M2, M3 con fotos (galería y cámara, compresión con la política remota) y
+      preferencias de visibilidad; formulario armado con los límites de `GET /config`.
+- [x] M10 modo perdido como máquina de estados (aviso 3d → formulario → responsiva 3e),
+      con los mismos textos que la web; colonia por CP, punto en el mapa y teléfono del
+      perfil como valor inicial.
+- [x] M8 guardianes (invitar, quitar, dejar de serlo, transferir, cancelar) y M9 aceptar
+      invitación o transferencia por enlace con vista previa pública antes de aceptar.
+- [x] Resolución de escaneo por enlace universal (`/t`, `/q/{code}`) y por lectura en la
+      app, con estrategias `GUARDIAN`, `FINDER`, `ACTIVATION`, `NEUTRAL`; M6 vista de
+      finder idéntica en contenido a la web; pantalla neutra.
+- [x] M4 activación con máquina de estados (lectura, verificación, elección de mascota,
+      vínculo, caducidad del token) y M5 lectura NFC en primer plano con respaldo por QR.
+- [x] M7 historial con mapa (react-native-maps), marcar sospechoso, silenciar por horas y
+      desvincular.
+- [x] Flujos Maestro con URL de escaneo simulada: `.maestro/activar-collar.yaml` y
+      `.maestro/hallazgo.yaml` (sin ejecutar: exigen build en dispositivo).
+- [x] Backend (repo web): `GET /guardian-invites/{code}` y `GET /transfers/{code}`
+      (vista previa), `GET /colonias?cp=` (adelantada de S7) y límites de mascotas, collar
+      y hallazgo en la configuración remota.
+
+**Decisiones de implementación (documento 06 actualizado):**
+- Identidad publicada en `config/app-identity.js`: EAS evalúa `app.config.ts` sin `.env`
+  y la configuración fallaba (ADR-014 y S10 quedaron corregidas).
+- Cliente de la API por registro (`core/api/registry.ts`): una instancia por proceso
+  instalada en `bootstrapCore()`; los repositorios la piden al llamar y se prueban con
+  fetch falso sin cargar la configuración.
+- Puertos de dispositivo (`core/ports`) con adaptadores en `core/adapters` y raíz de
+  composición `core/device`: NFC (react-native-nfc-manager), fotos (expo-image-picker),
+  compresión (expo-image-manipulator), ubicación (expo-location), compartir, mapa
+  (react-native-maps) y QR (expo-camera). Las pantallas solo conocen los puertos.
+- Mapa: react-native-maps como dice el documento 06 §9. Google Maps en Android necesita
+  `GOOGLE_MAPS_ANDROID_API_KEY` (documento 08 §7); sin ella el mapa sale vacío pero la app
+  funciona. Se descartó MapLibre con teselas de OSM porque la política de uso de OSM
+  prohíbe distribuir apps que consuman sus teselas sin permiso.
+- `LEGACY_HOSTNAMES` (S16) no se toca aquí; los enlaces de la app usan `alakito.mx`.
+
+**Pendiente de dispositivos y cuentas (no es código):** primera build de desarrollo
+(`eas build --profile development --platform android`) e instalación en un Android y en
+el iPhone; llave de Maps SDK for Android en EAS; client IDs de Google de tipo Android e
+iOS; prueba con un tag `LISTO` real (documento 10) para cumplir la aceptación; ejecutar
+los flujos Maestro sobre la build.
 
 **Aceptación:** con un tag `LISTO` en el entorno de pruebas, el dueño activa el collar
 desde el iPhone y desde Android acercando el teléfono; al acercarlo de nuevo abre el
 perfil; un tercer teléfono sin app abre la vista de finder en el navegador y el aviso
-llega como notificación al dueño.
+llega como notificación al dueño. Verificable cuando exista la build.
 
 ---
 

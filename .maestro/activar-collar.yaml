@@ -1,0 +1,27 @@
+# Flujo Maestro · Activar collar con URL de escaneo simulada (docs/06 §13, S13).
+# Requisitos: build de desarrollo instalada con sesión iniciada y una mascota propia
+# sin collar; el backend de pruebas debe tener un tag LISTO cuya lectura válida se pasa
+# en SCAN_URL (la genera scripts/sun-gen o la herramienta de personalización).
+# Ejecución: maestro test -e SCAN_URL="https://alakito.mx/t?p=...&m=..." .maestro/activar-collar.yaml
+appId: mx.com.sysosa.rescate
+env:
+  SCAN_URL: "https://alakito.mx/t?p=00000000000000000000000000000000&m=0000000000000000"
+---
+- launchApp:
+    clearState: false
+# El sistema abre la URL del collar como enlace universal → resolución → M4 con la lectura.
+- openLink: ${SCAN_URL}
+- assertVisible: "Activar collar"
+- assertVisible: "Collar verificado y listo para vincular."
+# Elegir la primera mascota propia sin collar y vincular.
+- tapOn:
+    id: "pet-option"
+    index: 0
+    optional: true
+- tapOn:
+    text: "Vincular a .*"
+- assertVisible:
+    id: "activation-done"
+- assertVisible: "¡Collar activado!"
+- tapOn: "Ver perfil"
+- assertVisible: "Collar"

@@ -16,6 +16,7 @@ describe("readBuildConfig", () => {
       linkDomain: APP_IDENTITY.linkDomain,
       easProjectId: APP_IDENTITY.easProjectId,
       googleIosUrlScheme: null,
+      googleMapsAndroidApiKey: null,
     });
   });
 

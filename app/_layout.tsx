@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo } from "react";
 import { useSessionHydration } from "@/core/auth/use-session";
 import { isApiError } from "@/core/api/problem";
+import { bootstrapCore } from "@/core/bootstrap";
 import { useAppFonts } from "@/core/theme/fonts";
 import { useTheme } from "@/core/theme/use-theme";
 import { ConfigGate } from "@/features/shell/config-gate";
@@ -15,6 +16,7 @@ import { ConfigGate } from "@/features/shell/config-gate";
  */
 
 void SplashScreen.preventAutoHideAsync();
+bootstrapCore();
 
 /** Reintentos solo ante red o 5xx; nunca ante 4xx (docs/06 §11). */
 const MAX_RETRIES = 2;

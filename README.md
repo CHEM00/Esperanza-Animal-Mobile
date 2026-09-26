@@ -16,12 +16,14 @@ un repositorio aparte.
 
 ## Estado
 
-Backend: secciones S1 a S4 del [plan](docs/09-plan-de-trabajo.md) implementadas y probadas
-en vivo en el repositorio `esperanza-animal` (API v1, verificador NFC, mascotas y collar,
-hallazgo y alertas). App: cimientos implementados (sección S10):
-configuración validada, cliente tipado por contrato, sesión con proveedores nativos,
-tema con los tokens de la web, pestañas nativas y puerta de actualización obligatoria.
-Las pantallas de negocio llegan en las secciones S11 a S14.
+Backend: secciones S1 a S5, S9, S18 y S19 del [plan](docs/09-plan-de-trabajo.md)
+implementadas y probadas en vivo en el repositorio web (API v1, verificador NFC, mascotas
+y collar, hallazgo y alertas, cifrado por campo, enlaces). App: cimientos (S10) y
+**mascotas y collar (S13)**: Mis mascotas, perfil, alta y edición con fotos, modo perdido,
+guardianes e invitaciones, activación del collar por NFC, lectura con respaldo QR, vista
+de finder e historial con mapa. Verificado en local; la primera build de desarrollo y la
+prueba con un tag real están pendientes (documento 09, S13). Comunidad (S11), publicar y
+perfil (S12) y push (S14) siguen en el plan.
 
 ## Puesta en marcha
 

@@ -54,12 +54,17 @@ app/                          Rutas de Expo Router (solo composición de pantall
 src/
   core/
     config/        Configuración tipada y validada al arrancar
-    api/           Cliente generado, envoltura HTTP, correlación, manejo de Problem Details
+    api/           Cliente generado, envoltura HTTP, correlación, Problem Details, multipart
+                   nativo y registro del cliente (una instancia por proceso, inyectable)
     auth/          Sesión, inicio de sesión nativo, almacenamiento seguro
+    device/        Raíz de composición de los puertos de dispositivo (adaptadores reales)
+    map/           Geometría de mapa: región ↔ centro y zoom, encuadre, caja de coordenadas
+    media/         Política de fotos: redimensión y calidad desde la configuración remota
+    bootstrap.ts   Arranque del núcleo (instala el cliente de la API); lo llama la raíz de rutas
     theme/         Tokens generados desde la web, tipografías, hook de tema
     navigation/    Mapa de enlaces profundos y helpers de rutas (única fuente de rutas)
-    ports/         Interfaces de dispositivo: NfcReader, PushRegistrar, LocationProvider,
-                   ImagePicker, ShareSheet, MapProvider
+    ports/         Interfaces de dispositivo: NfcReader, ImagePicker, ImageCompressor,
+                   LocationProvider, ShareSheet, MapView, QrScanner (PushRegistrar en S14)
     adapters/      Implementaciones de los puertos sobre librerías concretas
     i18n/          Formato de fechas y números en es-MX
     errors/        Tipos de error de dominio y mapeo de códigos a textos
@@ -89,6 +94,8 @@ texto de interfaz vive fuera de `strings.ts`.
 | Estrategia | Render de la vista de escaneo (`GUARDIAN`, `FINDER`, `ACTIVATION`, `NEUTRAL`) | La API decide la vista; la app elige el renderizador por clave, sin condicionales anidados |
 | Máquina de estados explícita | Activar collar; publicar (3d → 3c → 3e); modo perdido; onboarding | Flujos multipaso con estados nombrados y transiciones válidas; un reductor por flujo |
 | Fábrica | Cliente API desde la configuración; cola de consultas | Construcción única y comprobable |
+| Registro (singleton con inyección) | `core/api/registry`, `core/device` | Una instancia por proceso instalada en la raíz de composición; los repositorios y hooks la piden al usarla y las pruebas la sustituyen por dobles, sin `getInstance()` global |
+| Componentes compartidos únicos | `shared/ui` (FieldLabel, ConfirmDialog, NoticeModal, Sheet, Chip…) | Un cambio de forma se hace en un solo lugar; colores, radios y fuentes solo del tema; textos solo en `strings.ts`; rutas solo en `APP_ROUTES` |
 | Observador | Invalidación de consultas al recibir push o al volver al primer plano | Datos frescos sin recargas manuales |
 | Fachada | `core/auth` expone `signIn`, `signOut`, `session` | Oculta Better Auth y el almacenamiento seguro |
 

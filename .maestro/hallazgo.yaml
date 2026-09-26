@@ -1,0 +1,20 @@
+# Flujo Maestro · Hallazgo por enlace universal (docs/06 §13, S13).
+# Un tercer teléfono (o esta build sin sesión) abre la URL de un collar ACTIVO: debe
+# ver la tarjeta pública de la mascota y poder avisar a su familia.
+# Ejecución: maestro test -e SCAN_URL="https://alakito.mx/t?p=...&m=..." .maestro/hallazgo.yaml
+appId: mx.com.sysosa.rescate
+env:
+  SCAN_URL: "https://alakito.mx/t?p=00000000000000000000000000000000&m=0000000000000000"
+---
+- launchApp:
+    clearState: false
+- openLink: ${SCAN_URL}
+- assertVisible: "¿Encontraste a esta mascota?"
+- assertVisible: "Avisa a su familia. Recibirán tu mensaje al instante."
+- tapOn: "Mensaje para su familia"
+- inputText: "Está conmigo en la tienda de la esquina, tranquilo y con agua."
+- hideKeyboard
+- tapOn: "Avisar a su familia 🐾"
+- assertVisible:
+    id: "finder-sent"
+- assertVisible: "¡Gracias! Tu aviso ya llegó"

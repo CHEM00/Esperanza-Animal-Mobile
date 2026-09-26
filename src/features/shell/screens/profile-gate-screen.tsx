@@ -10,12 +10,14 @@ import { AppText } from "@/shared/ui/app-text";
 import { PawIcon } from "@/shared/ui/brand/paw-icon";
 import { CtaButton } from "@/shared/ui/cta-button";
 import { Screen } from "@/shared/ui/screen";
+import { SecondaryButton } from "@/shared/ui/secondary-button";
 import { AUTH_STRINGS } from "@/features/auth/strings";
 import { SHELL_STRINGS } from "../strings";
 
 /**
- * Pestaña Perfil en S10: demuestra el ciclo completo de sesión (entrar,
- * consultar /me con token portador, salir). La pantalla 3g completa llega en S12.
+ * Pestaña Perfil (S10 + S13): ciclo de sesión (entrar, /me, salir) y entrada
+ * a Mis mascotas y a Escanear collar, como indica el documento 06 §4. La
+ * pantalla 3g completa (stats, mis casos) llega en S12.
  */
 export function ProfileGateScreen() {
   const theme = useTheme();
@@ -59,7 +61,9 @@ export function ProfileGateScreen() {
         </AppText>
       ) : null}
       <View style={styles.cta}>
-        <CtaButton label="Cerrar sesión" onPress={() => void signOut()} />
+        <CtaButton label={SHELL_STRINGS.profile.pets} onPress={() => router.push(APP_ROUTES.pets)} />
+        <SecondaryButton label={SHELL_STRINGS.profile.scanCollar} onPress={() => router.push(APP_ROUTES.collarScan)} />
+        <SecondaryButton label={SHELL_STRINGS.profile.signOut} onPress={() => void signOut()} />
       </View>
     </Screen>
   );
@@ -68,5 +72,5 @@ export function ProfileGateScreen() {
 const styles = StyleSheet.create({
   title: { marginTop: 16, textAlign: "center" },
   body: { marginTop: 8, textAlign: "center" },
-  cta: { marginTop: 24, width: "100%" },
+  cta: { marginTop: 24, width: "100%", gap: 10 },
 });

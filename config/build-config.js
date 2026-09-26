@@ -23,6 +23,7 @@ const { APP_IDENTITY } = require("./app-identity");
  * @property {string} linkDomain
  * @property {string} easProjectId
  * @property {string | null} googleIosUrlScheme
+ * @property {string | null} googleMapsAndroidApiKey Llave de Maps SDK for Android; sin ella el mapa sale vacío en Android.
  */
 
 /** @type {readonly AppEnvironment[]} */
@@ -83,6 +84,7 @@ function readBuildConfig(source = process.env) {
     linkDomain: identity(source, "APP_LINK_DOMAIN", DOMAIN, "dominio sin https://", APP_IDENTITY.linkDomain),
     easProjectId: APP_IDENTITY.easProjectId,
     googleIosUrlScheme: optional(source, "GOOGLE_IOS_URL_SCHEME"),
+    googleMapsAndroidApiKey: optional(source, "GOOGLE_MAPS_ANDROID_API_KEY"),
   };
 }
 

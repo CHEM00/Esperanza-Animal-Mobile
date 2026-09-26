@@ -14,6 +14,17 @@ import deepLinkPaths from "./config/deep-link-paths.json";
 const SPLASH_BACKGROUND = "#f6faf9";
 const ADAPTIVE_ICON_BACKGROUND = "#f6faf9";
 
+/**
+ * Textos de permiso que muestra el sistema (iOS los exige en el Info.plist). Se piden
+ * en contexto, nunca al arrancar (docs/06 §7).
+ */
+const PERMISSION_TEXTS = {
+  photos: "Alakito usa tus fotos para el perfil de tu mascota y para el aviso de hallazgo.",
+  camera: "Alakito usa la cámara para tomar fotos de tu mascota y leer el QR del collar.",
+  location: "Alakito usa tu ubicación para señalar por dónde buscar; siempre aproximada, nunca el punto exacto.",
+  nfc: "Alakito lee el collar de tu mascota para activarlo o avisar a su familia.",
+} as const;
+
 const build = readBuildConfig();
 const linkPathPrefixes = deepLinkPaths.paths.map((entry) =>
   entry.pattern.replace(/\/\*$/, ""),
@@ -39,6 +50,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: build.androidPackage,
+    // Google Maps en Android exige llave; iOS usa Apple Maps sin llave (docs/06 §9).
+    ...(build.googleMapsAndroidApiKey
+      ? { config: { googleMaps: { apiKey: build.googleMapsAndroidApiKey } } }
+      : {}),
     adaptiveIcon: {
       foregroundImage: "./assets/android-icon-foreground.png",
       backgroundColor: ADAPTIVE_ICON_BACKGROUND,
@@ -72,6 +87,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-font",
     "expo-web-browser",
     "expo-apple-authentication",
+    ["expo-image-picker", { photosPermission: PERMISSION_TEXTS.photos, cameraPermission: PERMISSION_TEXTS.camera }],
+    ["expo-camera", { cameraPermission: PERMISSION_TEXTS.camera }],
+    ["expo-location", { locationWhenInUsePermission: PERMISSION_TEXTS.location }],
+    ["react-native-nfc-manager", { nfcPermission: PERMISSION_TEXTS.nfc, includeNdefEntitlement: true }],
     ...(build.googleIosUrlScheme
       ? [
           [

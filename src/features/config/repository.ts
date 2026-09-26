@@ -1,4 +1,4 @@
-import { apiClient, call, type ApiClient, type components } from "@/core/api";
+import { call, getApiClient, type ApiClient, type components } from "@/core/api/registry";
 
 /**
  * Repositorio de configuración remota (docs/06 §3): la UI pide «la
@@ -7,6 +7,6 @@ import { apiClient, call, type ApiClient, type components } from "@/core/api";
 
 export type RemoteConfig = components["schemas"]["RemoteConfig"];
 
-export function fetchRemoteConfig(client: ApiClient = apiClient): Promise<RemoteConfig> {
+export function fetchRemoteConfig(client: ApiClient = getApiClient()): Promise<RemoteConfig> {
   return call(() => client.GET("/api/v1/config"));
 }

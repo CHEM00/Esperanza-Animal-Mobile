@@ -1,5 +1,22 @@
 // Generado por scripts/generate-api.mjs desde contract/openapi.json. No editar a mano.
 export interface paths {
+    "/api/v1/colonias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Colonias de un código postal (catálogo SEPOMEX) */
+        get: operations["searchColonias"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/config": {
         parameters: {
             query?: never;
@@ -9,6 +26,23 @@ export interface paths {
         };
         /** Configuración remota para la app móvil */
         get: operations["getRemoteConfig"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/guardian-invites/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Qué mascota y si la invitación sigue vigente, antes de aceptarla */
+        get: operations["getGuardianInvitePreview"];
         put?: never;
         post?: never;
         delete?: never;
@@ -481,6 +515,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/transfers/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Qué mascota y si la transferencia sigue vigente, antes de aceptarla */
+        get: operations["getPetTransferPreview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/transfers/{code}/accept": {
         parameters: {
             query?: never;
@@ -508,6 +559,32 @@ export interface components {
             emergencyName: string | null;
             emergencyPhone: string | null;
             phone: string | null;
+        };
+        /** @description Colonias de un código postal; municipio pausado o CP desconocido se explican */
+        CpSearchResult: {
+            /** @constant */
+            status: "not_found";
+        } | {
+            estado: string;
+            municipio: string;
+            /** @constant */
+            status: "inactive";
+        } | {
+            colonias: {
+                id: string;
+                name: string;
+                /** @description Tipo de asentamiento SEPOMEX; se muestra cuando no es «Colonia» */
+                type: string | null;
+            }[];
+            estado: string;
+            municipio: string;
+            /** @description Cabecera municipal (INEGI): centra el mapa de la zona */
+            municipioCenter: {
+                lat: number;
+                lng: number;
+            } | null;
+            /** @constant */
+            status: "ok";
         };
         /** @description Aviso enviado y canal de contacto disponible */
         FinderReportResult: {
@@ -544,6 +621,12 @@ export interface components {
             expiresAt: string;
             /** @description Enlace de un solo uso; el código va dentro */
             url: string;
+        };
+        /** @description Qué mascota y si el enlace sigue vigente, antes de aceptarlo; nada del dueño */
+        LinkPreview: {
+            petName: string;
+            /** @enum {string} */
+            state: "valida" | "usada" | "vencida";
         };
         /** @description Estado de la mascota y el caso enlazado tras activar o cerrar el modo perdido */
         LostModeResult: {
@@ -717,19 +800,28 @@ export interface components {
                 clientImageQuality: number;
                 descriptionMaxLength: number;
                 descriptionMinLength: number;
+                finderMessageMaxLength: number;
+                maxGuardiansPerPet: number;
+                maxPetsPerUser: number;
                 maxPhotoBytes: number;
                 maxPhotos: number;
                 maxPublicationsPerDay: number;
+                medicalNotesMaxLength: number;
+                microchipCodeMaxLength: number;
                 minPhotos: number;
                 nameMaxLength: number;
+                nameMinLength: number;
                 phoneLength: number;
                 referenceMaxLength: number;
                 referenceMinLength: number;
                 reportNoteMaxLength: number;
+                scanTokenTtlMinutes: number;
                 sightingNoteMaxLength: number;
                 sightingZoneMaxLength: number;
                 sightingZoneMinLength: number;
                 speciesDetailMaxLength: number;
+                tagMuteDefaultHours: number;
+                tagMuteMaxHours: number;
             };
             map: {
                 caseZoom: number;
@@ -850,6 +942,55 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    searchColonias: {
+        parameters: {
+            query: {
+                cp: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Colonias del CP; municipio pausado o CP desconocido se explican */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CpSearchResult"];
+                };
+            };
+            /** @description Datos inválidos (validation.failed) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Demasiadas peticiones (rate_limited) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Error interno (internal_error) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
     getRemoteConfig: {
         parameters: {
             query?: never;
@@ -866,6 +1007,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RemoteConfig"];
+                };
+            };
+            /** @description Demasiadas peticiones (rate_limited) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Error interno (internal_error) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getGuardianInvitePreview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Vista previa del enlace */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinkPreview"];
+                };
+            };
+            /** @description Datos inválidos (validation.failed) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description No encontrado (not_found) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
                 };
             };
             /** @description Demasiadas peticiones (rate_limited) */
@@ -3566,6 +3765,64 @@ export interface operations {
             };
             /** @description Tipo de contenido no soportado (unsupported_media_type) */
             415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Demasiadas peticiones (rate_limited) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Error interno (internal_error) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    getPetTransferPreview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Vista previa del enlace */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinkPreview"];
+                };
+            };
+            /** @description Datos inválidos (validation.failed) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description No encontrado (not_found) */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
