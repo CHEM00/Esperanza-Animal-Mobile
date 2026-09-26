@@ -10,11 +10,8 @@ jobs:
     name: Lint, tipos, pruebas y contrato
     runs-on: ubuntu-latest
     env:
-      # Valores de build ficticios: solo se evalúa app.config.ts, no se compila nada nativo.
-      APP_ANDROID_PACKAGE: mx.com.sysosa.rescate
-      APP_IOS_BUNDLE_ID: mx.com.sysosa.rescate
-      APP_SCHEME: alakito
-      APP_LINK_DOMAIN: alakito.mx
+      # La identidad de la app viene de config/app-identity.js; aquí solo lo que cambia
+      # por entorno. No se compila nada nativo: se evalúa app.config.ts.
       EXPO_PUBLIC_API_BASE_URL: https://alakito.mx
     steps:
       - uses: actions/checkout@v4

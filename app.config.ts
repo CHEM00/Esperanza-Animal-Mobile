@@ -3,15 +3,13 @@ import { readBuildConfig } from "./config/build-config";
 import deepLinkPaths from "./config/deep-link-paths.json";
 
 /**
- * Configuración de Expo (docs/06 §12). La identidad y los dominios vienen del
- * entorno de build validado en config/build-config.ts; nada de esto se escribe
- * dos veces. Los valores que la app necesita en tiempo de ejecución viajan en
+ * Configuración de Expo (docs/06 §12). La identidad publicada vive en
+ * config/app-identity.js y el entorno de build (validado en config/build-config.js)
+ * solo aporta lo que cambia por perfil o la sobrescribe para una variante; nada se
+ * escribe dos veces. Los valores que la app necesita en tiempo de ejecución viajan en
  * `extra`.
  */
 
-/** Marca desde el 2026-09-25 (ADR-014); el slug debe coincidir con el proyecto en EAS. */
-const APP_NAME = "Alakito";
-const APP_SLUG = "alakito";
 /** Tokens de marca del splash (tema claro): la pantalla nativa no conoce el tema del usuario. */
 const SPLASH_BACKGROUND = "#f6faf9";
 const ADAPTIVE_ICON_BACKGROUND = "#f6faf9";
@@ -23,8 +21,9 @@ const linkPathPrefixes = deepLinkPaths.paths.map((entry) =>
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: APP_NAME,
-  slug: APP_SLUG,
+  name: build.name,
+  slug: build.slug,
+  owner: build.owner,
   version: "0.1.0",
   orientation: "portrait",
   scheme: build.scheme,

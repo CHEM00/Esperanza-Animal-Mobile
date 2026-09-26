@@ -98,8 +98,11 @@ primera lectura de chips (documento 10), con `NFC_ALLOW_FACTORY_KEYS=true`.
 | Variable | Perfil | Uso |
 |---|---|---|
 | `EXPO_PUBLIC_API_BASE_URL` | por perfil EAS | Dominio del backend |
-| `EXPO_PUBLIC_LINK_DOMAIN` | por perfil | Dominio de enlaces universales |
-| `EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID`, `..._IOS` | por perfil | Login nativo |
+| `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | por perfil | Login nativo con Google (audiencia del ID token e iOS) |
+| `APP_ENV` | por perfil, en `eas.json` | `development`, `preview` o `production` |
+| `EAS_PROJECT_ID` | build | Id del proyecto en EAS (lo imprime `eas init`) |
+| `GOOGLE_IOS_URL_SCHEME` | build | Esquema inverso del client ID de iOS de Google |
+| `APP_ANDROID_PACKAGE`, `APP_IOS_BUNDLE_ID`, `APP_SCHEME`, `APP_LINK_DOMAIN` | solo variantes | Sobrescriben la identidad publicada de `config/app-identity.js`; en el uso normal no se definen |
 | `EXPO_PUBLIC_MAPS_PROVIDER` | por perfil | `native` o `maplibre` |
 | Llave de Google Maps para Android | secreto EAS | Inyectada en el manifiesto por config plugin |
 | `WEB_REPO_PATH` | solo local | Ruta al repo web para `sync-tokens` |

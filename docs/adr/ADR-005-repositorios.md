@@ -18,5 +18,5 @@ El contrato se genera en el backend y cada cliente fija la versión que consume.
 
 ## Consecuencias
 
-- Este directorio se llama `Esperanza-Animal-Android`; el nombre acordado es
-  `Esperanza-Animal-Mobile`. El renombrado es una acción manual pendiente.
+- El directorio local se renombró a `alakito-Mobile` el 2026-09-25 (ADR-014); el remoto
+  sigue siendo `CHEM00/Esperanza-Animal-Mobile` hasta que se renombre en GitHub.

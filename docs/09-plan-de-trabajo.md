@@ -443,9 +443,10 @@ cuentas y dispositivos (abajo).
 
 - [x] Proyecto Expo SDK 57 con TypeScript estricto, ESLint con reglas de capas
       (`eslint.config.js`), estructura del documento 06 §2.
-- [x] `core/config` validado al arrancar (`parseAppConfig`); `app.config.ts` con
-      identidad y dominios desde `config/build-config.js`; `eas.json` con perfiles
-      `development`, `preview`, `production`.
+- [x] `core/config` validado al arrancar (`parseAppConfig`); `app.config.ts` con la
+      identidad publicada de `config/app-identity.js` y el entorno de build de
+      `config/build-config.js` (evaluable con el entorno vacío, como hace EAS); `eas.json`
+      con perfiles `development`, `preview`, `production`.
 - [x] `contract:pull` (copia versionada con `contract.lock.json`), `api:generate` y
       `api:check`; cliente `openapi-fetch` con correlación, dispositivo y token portador;
       Problem Details a `ApiError` y textos por código.

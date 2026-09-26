@@ -29,8 +29,12 @@ Notas de S10 (2026-09-13, Expo SDK 57):
 - TypeScript queda en la rama 5.9 porque `openapi-typescript` aún no admite la 6.
 - `react-dom` se fija a la versión de `react` con `overrides`: Better Auth y Expo lo
   declaran como par opcional y npm intentaba instalar una versión incompatible.
-- La configuración de build vive en `config/build-config.js` (JavaScript con JSDoc):
-  el cargador de configuración de Expo no resuelve módulos TypeScript locales.
+- La identidad publicada (nombre, slug, owner, paquete, bundle id, esquema y dominio de
+  enlaces) vive en `config/app-identity.js`; `config/build-config.js` añade lo que cambia
+  por entorno y admite sobrescribir la identidad solo para una variante. Ambos son
+  JavaScript con JSDoc porque el cargador de configuración de Expo no resuelve módulos
+  TypeScript locales. Deben evaluarse con el entorno vacío: EAS no carga `.env` en
+  `eas init`, `eas credentials` ni `eas project:info` (`EXPO_NO_DOTENV`).
 - Microsoft por navegador del sistema exige el plugin Expo de Better Auth también en
   el servidor; queda para cuando el backend lo incorpore (nueva dependencia con
   regeneración del lockfile en Linux).
