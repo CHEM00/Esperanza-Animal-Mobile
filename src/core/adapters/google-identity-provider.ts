@@ -1,4 +1,3 @@
-import { GoogleSignin, isErrorWithCode, statusCodes } from "@react-native-google-signin/google-signin";
 import type { IdentityProvider, IdentitySignInResult } from "@/core/ports/identity-provider";
 
 /**
@@ -6,50 +5,74 @@ import type { IdentityProvider, IdentitySignInResult } from "@/core/ports/identi
  * el client ID web del mismo proyecto; el backend lo acepta como audiencia
  * (GOOGLE_MOBILE_CLIENT_IDS). Sin client ID web configurado, el proveedor
  * no está disponible y el botón no aparece.
+ *
+ * La librería se carga de forma perezosa: su import exige el módulo nativo y
+ * truena en Expo Go, donde el proveedor simplemente no está disponible.
  */
 export interface GoogleIdentityConfig {
   webClientId: string | null;
   iosClientId: string | null;
 }
 
+type GoogleSigninModule = typeof import("@react-native-google-signin/google-signin");
+
+function loadGoogleSignin(): GoogleSigninModule | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- carga perezosa deliberada (ver cabecera)
+    return require("@react-native-google-signin/google-signin") as GoogleSigninModule;
+  } catch {
+    return null;
+  }
+}
+
 export function createGoogleIdentityProvider(config: GoogleIdentityConfig): IdentityProvider {
   let configured = false;
+  let module: GoogleSigninModule | null | undefined;
 
-  function ensureConfigured(): boolean {
+  /** Módulo listo y configurado, o null si no hay client ID o no existe el módulo nativo. */
+  function ensureConfigured(): GoogleSigninModule | null {
     if (!config.webClientId) {
-      return false;
+      return null;
+    }
+    if (module === undefined) {
+      module = loadGoogleSignin();
+    }
+    if (!module) {
+      return null;
     }
     if (!configured) {
-      GoogleSignin.configure({
+      module.GoogleSignin.configure({
         webClientId: config.webClientId,
         ...(config.iosClientId ? { iosClientId: config.iosClientId } : {}),
       });
       configured = true;
     }
-    return true;
+    return module;
   }
 
   return {
     id: "google",
 
     async isAvailable() {
-      if (!ensureConfigured()) {
+      const google = ensureConfigured();
+      if (!google) {
         return false;
       }
       try {
         // En Android exige Google Play Services; en iOS siempre responde true.
-        return await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: false });
+        return await google.GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: false });
       } catch {
         return false;
       }
     },
 
     async signIn(): Promise<IdentitySignInResult> {
-      if (!ensureConfigured()) {
-        return { status: "unavailable", reason: "Google no está configurado en esta build" };
+      const google = ensureConfigured();
+      if (!google) {
+        return { status: "unavailable", reason: "Google no está disponible en esta build" };
       }
       try {
-        const response = await GoogleSignin.signIn();
+        const response = await google.GoogleSignin.signIn();
         if (response.type !== "success") {
           return { status: "cancelled" };
         }
@@ -71,7 +94,7 @@ export function createGoogleIdentityProvider(config: GoogleIdentityConfig): Iden
           },
         };
       } catch (error) {
-        if (isErrorWithCode(error) && error.code === statusCodes.SIGN_IN_CANCELLED) {
+        if (google.isErrorWithCode(error) && error.code === google.statusCodes.SIGN_IN_CANCELLED) {
           return { status: "cancelled" };
         }
         throw error;
@@ -79,8 +102,8 @@ export function createGoogleIdentityProvider(config: GoogleIdentityConfig): Iden
     },
 
     async signOut() {
-      if (configured) {
-        await GoogleSignin.signOut();
+      if (configured && module) {
+        await module.GoogleSignin.signOut();
       }
     },
   };

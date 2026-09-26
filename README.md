@@ -14,6 +14,16 @@ Native y Expo. El backend, la web y el contrato de la API viven en el repositori
 `esperanza-animal`. La herramienta interna de personalización de collares NFC vive en
 un repositorio aparte.
 
+## Probar en Expo Go (sin build ni cuenta de Apple)
+
+1. Backend local del repo web corriendo y, en `.env`, `EXPO_PUBLIC_API_BASE_URL` con la IP
+   de la PC en la red local (p. ej. `http://192.168.1.20:3000`).
+2. `npx expo start` y escanear el QR con Expo Go (SDK 57) en el iPhone.
+3. En Login, «Sesión de desarrollo»: pegar el token de `node scripts/dev-session.mjs`
+   (repo web). Solo aparece en builds `development`.
+4. Lo que no se puede probar ahí (NFC en la app, Google nativo, enlaces universales) está
+   en el documento 08 §1.
+
 ## Estado
 
 Backend: secciones S1 a S5, S9, S18 y S19 del [plan](docs/09-plan-de-trabajo.md)

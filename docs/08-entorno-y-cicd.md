@@ -18,6 +18,29 @@ en el iPhone por enlace, subir a TestFlight y App Store con EAS Submit.
 **Qué no se puede:** depurar código Swift, construir el App Clip, usar simuladores de iOS.
 Esas tareas están en la fase con entorno macOS (Mac mini, o Mac en la nube rentada por días).
 
+### Probar sin dispositivos Android ni cuenta de Apple Developer
+
+| Vía | Qué cubre | Qué no cubre |
+|---|---|---|
+| **Expo Go en el iPhone** (gratis, hoy) | Mascotas, modo perdido, guardianes, aceptar enlaces, resolución de escaneo por URL simulada, vista de finder, historial, mapa (Apple Maps), fotos, cámara para QR, ubicación | Lectura NFC en la app (no hay módulo nativo: la app lo detecta y ofrece el QR), Google nativo, enlaces universales (`https://alakito.mx/...` abre Safari), push |
+| **Emulador Android** (gratis; Android Studio + Hyper-V) | Lo mismo que Expo Go más Google Maps con llave y App Links por `adb` | NFC (no existe en el emulador), cámara real |
+| **Android físico con NFC** (prestado o comprado) | Activación real del collar, lectura en primer plano, QR con cámara | — |
+| **iPhone físico con build de EAS** | Todo en iOS, incluida la lectura NFC en primer plano | Exige Apple Developer Program (99 USD/año) |
+
+Para entrar sin proveedor OAuth en Expo Go, la pantalla de login de las builds
+`development` muestra «Sesión de desarrollo»: se pega el token que imprime
+`node scripts/dev-session.mjs correo "Nombre"` en el repo web contra la base local. La
+librería de Google Sign-In se carga de forma perezosa porque su import truena sin módulo
+nativo; en Expo Go el proveedor simplemente no aparece. Pasos:
+
+1. Backend local corriendo (`npm run dev` en el repo web) y `EXPO_PUBLIC_API_BASE_URL`
+   en el `.env` del móvil apuntando a la IP de la PC en la red local, p. ej.
+   `http://192.168.1.20:3000` (el bundle lo genera el servidor de Expo, no se hornea).
+2. `npx expo start` en el repo móvil; en el iPhone, Expo Go (SDK 57) escanea el QR.
+3. Login → «Sesión de desarrollo» → pegar el token.
+4. Para simular un collar: en la terminal de Expo, `npx uri-scheme open "exp://<ip>:8081/--/collar/resolver?url=https%3A%2F%2Falakito.mx%2Ft%3Fp%3D...%26m%3D..." --ios`
+   con una URL generada por `scripts/sun-gen.mjs` del repo web.
+
 ## 2. Dispositivos de prueba
 
 | Dispositivo | Uso | Condición |

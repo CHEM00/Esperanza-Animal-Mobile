@@ -555,11 +555,17 @@ sin `.env`, como hace EAS). Pendiente lo que exige dispositivos y cuentas (abajo
   prohíbe distribuir apps que consuman sus teselas sin permiso.
 - `LEGACY_HOSTNAMES` (S16) no se toca aquí; los enlaces de la app usan `alakito.mx`.
 
-**Pendiente de dispositivos y cuentas (no es código):** primera build de desarrollo
-(`eas build --profile development --platform android`) e instalación en un Android y en
-el iPhone; llave de Maps SDK for Android en EAS; client IDs de Google de tipo Android e
-iOS; prueba con un tag `LISTO` real (documento 10) para cumplir la aceptación; ejecutar
-los flujos Maestro sobre la build.
+**Pendiente de dispositivos y cuentas (no es código):** el usuario no tiene Android ni
+cuenta de Apple Developer (2026-09-26), así que el orden es: (1) **Expo Go en el iPhone**
+para todo lo que no es NFC ni Google nativo, con la sesión de desarrollo del login
+(documento 08 §1); (2) emulador Android cuando se instale Android Studio; (3) un Android
+con NFC, prestado o comprado, para la activación real con un tag `LISTO` (documento 10);
+(4) Apple Developer Program antes de S16, que además hace falta para Sign in with Apple,
+push y enlaces universales. Siguen pendientes la llave de Maps SDK for Android en EAS, los
+client IDs de Google de tipo Android e iOS y ejecutar los flujos Maestro sobre una build.
+`npx expo-doctor` avisa de cinco paquetes con parche atrasado y de metadatos del
+directorio de React Native para `react-native-nfc-manager`: se revisan al hacer la
+primera build de EAS.
 
 **Aceptación:** con un tag `LISTO` en el entorno de pruebas, el dueño activa el collar
 desde el iPhone y desde Android acercando el teléfono; al acercarlo de nuevo abre el

@@ -32,6 +32,12 @@ export interface SignInDeps {
 export interface SignInService {
   availableProviders(): Promise<NativeIdentityProviderId[]>;
   signIn(providerId: NativeIdentityProviderId): Promise<SignInOutcome>;
+  /**
+   * Adopta un token de sesión ya emitido por el backend (`scripts/dev-session.mjs`).
+   * Solo lo expone la pantalla de login en builds de desarrollo; el token se
+   * valida en el servidor en la primera petición, aquí solo se guarda.
+   */
+  adoptToken(token: string): Promise<SignInOutcome>;
   signOut(): Promise<void>;
 }
 
@@ -64,6 +70,15 @@ export function createSignInService(deps: SignInDeps): SignInService {
       } catch (error) {
         return { status: "failed", error };
       }
+    },
+
+    async adoptToken(token) {
+      const trimmed = token.trim();
+      if (trimmed.length === 0) {
+        return { status: "failed", error: new Error("Token de sesión vacío") };
+      }
+      await deps.saveSessionToken(trimmed);
+      return { status: "signed-in" };
     },
 
     async signOut() {

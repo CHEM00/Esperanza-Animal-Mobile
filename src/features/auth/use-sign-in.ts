@@ -51,6 +51,24 @@ export function useSignIn() {
     [queryClient],
   );
 
+  /** Sesión de desarrollo: guarda el token y refresca todo lo que depende de la sesión. */
+  const adoptToken = useCallback(
+    async (token: string): Promise<boolean> => {
+      setBusy("google");
+      try {
+        const outcome = await signInService.adoptToken(token);
+        if (outcome.status === "signed-in") {
+          await queryClient.invalidateQueries();
+          return true;
+        }
+        return false;
+      } finally {
+        setBusy(null);
+      }
+    },
+    [queryClient],
+  );
+
   const signOut = useCallback(async () => {
     try {
       await signInService.signOut();
@@ -59,5 +77,5 @@ export function useSignIn() {
     }
   }, [queryClient]);
 
-  return { available, busy, message, signIn, signOut };
+  return { available, busy, message, signIn, adoptToken, signOut };
 }

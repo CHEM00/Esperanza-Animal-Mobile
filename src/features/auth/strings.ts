@@ -13,4 +13,12 @@ export const AUTH_STRINGS = {
   unavailable: "Ese proveedor no está disponible en este dispositivo.",
   failed: "No se pudo iniciar sesión. Inténtalo de nuevo.",
   skip: "Seguir sin cuenta",
+  devSession: {
+    title: "Sesión de desarrollo",
+    hint: "Solo en builds de desarrollo y Expo Go. Pega el token que imprime scripts/dev-session.mjs del backend.",
+    label: "Token de sesión",
+    placeholder: "Pega aquí el token",
+    action: "Entrar con el token",
+    invalid: "El token está vacío o no se pudo guardar.",
+  },
 } as const;

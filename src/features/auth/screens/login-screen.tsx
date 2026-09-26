@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
+import { appConfig } from "@/core/config";
 import { APP_ROUTES } from "@/core/navigation/links";
 import type { NativeIdentityProviderId } from "@/core/ports/identity-provider";
 import { useTheme } from "@/core/theme/use-theme";
@@ -7,6 +8,7 @@ import { useRemoteConfig } from "@/features/config/use-remote-config";
 import { AppText } from "@/shared/ui/app-text";
 import { PawIcon } from "@/shared/ui/brand/paw-icon";
 import { Screen } from "@/shared/ui/screen";
+import { DevSessionForm } from "../components/dev-session-form";
 import { ProviderButton } from "../components/provider-button";
 import { AUTH_STRINGS } from "../strings";
 import { useSignIn } from "../use-sign-in";
@@ -21,7 +23,8 @@ export function LoginScreen() {
   const theme = useTheme();
   const router = useRouter();
   const remoteConfig = useRemoteConfig();
-  const { available, busy, message, signIn } = useSignIn();
+  const { available, busy, message, signIn, adoptToken } = useSignIn();
+  const devSessionEnabled = appConfig.environment === "development";
 
   const enabledByBackend = new Set(remoteConfig.data?.oauthProviders ?? []);
   const providers: NativeIdentityProviderId[] = (available ?? []).filter((id) =>
@@ -34,6 +37,14 @@ export function LoginScreen() {
     if (outcome.status === "signed-in") {
       router.replace(APP_ROUTES.feed);
     }
+  }
+
+  async function handleDevToken(token: string): Promise<boolean> {
+    const accepted = await adoptToken(token);
+    if (accepted) {
+      router.replace(APP_ROUTES.feed);
+    }
+    return accepted;
   }
 
   return (
@@ -79,6 +90,8 @@ export function LoginScreen() {
           {AUTH_STRINGS.privacyNote}
         </AppText>
       </View>
+
+      {devSessionEnabled ? <DevSessionForm onAdopt={handleDevToken} busy={busy !== null} /> : null}
 
       <Pressable
         accessibilityRole="button"
